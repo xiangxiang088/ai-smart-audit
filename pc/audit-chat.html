@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智能问答 · 证据溯源 - 工程审计智能审读</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-audit.css">
+<link rel="stylesheet" href="/pc/css/pc-visual-enhance.css">
+</head>
+<body>
+<div class="pc-wrapper">
+  <aside class="pc-sidebar" id="pcSidebar"></aside>
+  <div class="pc-main">
+    <header class="pc-topbar" id="pcTopbar"></header>
+    <main class="pc-content au-chat-page">
+
+      <div id="noProject" style="display:none;">
+        <div class="au-empty"><span class="icon">💬</span>请先从「审计项目」进入一个项目，或在下方选择项目</div>
+        <div class="pc-card" style="max-width:420px;margin:16px auto;">
+          <div class="pc-card-title">选择审计项目</div>
+          <select class="au-select" id="projectPick" style="width:100%;"></select>
+        </div>
+      </div>
+
+      <div id="chatView" class="au-chat-layout" style="display:none;">
+        <!-- 左：会话列表 -->
+        <aside class="au-session-panel">
+          <button class="au-btn primary block" id="btnNewSession">＋ 新建问答</button>
+          <div class="au-session-list" id="sessionList"></div>
+        </aside>
+
+        <!-- 中：对话区 -->
+        <section class="au-chat-main">
+          <div class="au-chat-head">
+            <button class="au-btn sm" onclick="location.href='/pc/audit-project.html'">‹ 项目</button>
+            <select class="au-select sm" id="projectSelect" title="切换项目"></select>
+            <span id="chatTitle" class="au-chat-title">智能问答 · 证据溯源</span>
+            <span id="modelTag" class="au-model-tag" title="当前主模型（欠费/限流自动切换备用）"></span>
+          </div>
+
+          <div class="au-chat-scroll" id="chatScroll">
+            <div id="welcome" class="au-welcome">
+              <div class="au-welcome-icon">🔍</div>
+              <h3>工程审计智能问答（每答必溯源）</h3>
+              <p class="au-welcome-sub">基于 PaddleOCR-VL 识读的清单 / 结算 / 合同 / 签证 / 发票 / 照片，由 Seed Agent 自主检索取证后作答；每个数字都标注来源文件、页码与坐标，资料中没有的会明确告知并列出应补清单，<b>不编造</b>。</p>
+              <div class="au-suggest" id="suggestList"></div>
+            </div>
+            <div id="msgList" class="au-msg-list"></div>
+            <div id="typing" class="au-msg assistant" style="display:none;">
+              <div class="au-avatar">AI</div>
+              <div class="au-bubble">
+                <div class="au-typing"><span></span><span></span><span></span><em id="typingHint">正在检索资料、多轮取证…</em></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="au-chat-input">
+            <textarea id="askInput" rows="1" placeholder="向审计助手提问，例如：结算书综合单价与中标清单是否一致？哪些签证没有三方签字盖章？"></textarea>
+            <button class="au-btn primary" id="btnSend">发送</button>
+          </div>
+        </section>
+
+        <!-- 右：证据抽屉 -->
+        <aside class="au-evidence-panel" id="evidencePanel" style="display:none;">
+          <div class="au-ev-head">
+            <span>🔖 证据定位</span>
+            <button class="au-btn sm" id="btnCloseEvidence">关闭</button>
+          </div>
+          <div id="evidenceBody" class="au-ev-body"></div>
+        </aside>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-md.js"></script>
+<script src="/pc/js/pc-audit-chat.js"></script>
+<script>initPCCommon('audit-chat');</script>
+</body>
+</html>

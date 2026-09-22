@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>今日学习计划 - AI智能教育助手</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-education.css">
+<link rel="stylesheet" href="/pc/css/pc-learning-plan.css">
+</head>
+<body class="pc-layout">
+
+<!-- 侧边栏 -->
+<aside class="pc-sidebar" id="pcSidebar"></aside>
+
+<!-- 主内容区 -->
+<div class="pc-main">
+  <!-- 顶部栏 -->
+  <header class="pc-topbar" id="pcTopbar"></header>
+
+  <!-- 页面内容 -->
+  <div class="pc-content">
+    <div class="pc-page-header">
+      <h1 class="pc-page-title">今日学习计划</h1>
+      <p class="pc-page-subtitle">AI 根据你的知识画像，为你量身定制每日学习路径</p>
+    </div>
+
+    <!-- 学科选择 Tabs -->
+    <div class="lp-subject-tabs" id="subjectTabs">
+      <span style="color:var(--text-muted);font-size:13px;">加载中...</span>
+    </div>
+
+    <!-- 两列布局 -->
+    <div class="lp-two-col">
+      <!-- 左列 -->
+      <div class="lp-left-col">
+
+        <!-- AI建议卡片 -->
+        <div class="pc-card lp-plan-card">
+          <div class="lp-plan-header">
+            <div class="lp-plan-title">📅 AI个性化学习建议</div>
+            <div class="lp-plan-meta" id="planMeta"></div>
+          </div>
+          <div id="planContent">
+            <div class="lp-plan-loading">⏳ 正在生成学习计划...</div>
+          </div>
+          <div class="lp-plan-actions" id="planActions" style="display:none;">
+            <button class="pc-btn pc-btn-outline" id="refreshPlanBtn" onclick="refreshPlan()">
+              🔄 重新生成
+            </button>
+            <span class="lp-cache-tag" id="cacheTag"></span>
+          </div>
+        </div>
+
+        <!-- 推荐知识点列表 -->
+        <div class="pc-card lp-nodes-card">
+          <div class="lp-nodes-title">📌 今日重点知识点</div>
+          <div id="nodeList">
+            <div class="lp-plan-loading">⏳ 加载中...</div>
+          </div>
+        </div>
+
+        <!-- 推荐练习题卡片 -->
+        <div class="pc-card lp-questions-card">
+          <div class="lp-questions-title">📝 今日推荐练习题</div>
+          <div id="questionList">
+            <div class="lp-plan-loading">⏳ 加载中...</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 右列 -->
+      <div class="lp-right-col">
+
+        <!-- 三维雷达图卡片 -->
+        <div class="pc-card lp-radar-card">
+          <div class="lp-radar-title">📊 知识三维图谱</div>
+          <div class="lp-radar-wrap">
+            <canvas id="radarCanvas" class="lp-radar-canvas" width="220" height="220"></canvas>
+          </div>
+          <div class="lp-radar-legend">
+            <div class="lp-legend-item">
+              <div class="lp-legend-dot" style="background:#3b82f6;"></div>
+              <span>理解</span>
+            </div>
+            <div class="lp-legend-item">
+              <div class="lp-legend-dot" style="background:#10b981;"></div>
+              <span>记忆</span>
+            </div>
+            <div class="lp-legend-item">
+              <div class="lp-legend-dot" style="background:#8b5cf6;"></div>
+              <span>应用</span>
+            </div>
+          </div>
+          <div class="lp-radar-hint" id="radarHint">
+            完成评测后，这里将展示你在理解、记忆、应用三个维度的学习状态。
+          </div>
+        </div>
+
+        <!-- 本周进度卡片 -->
+        <div class="pc-card lp-week-card">
+          <div class="lp-week-title">🎯 三维掌握度</div>
+          <div class="lp-week-stats" id="weekStats">
+            <div class="lp-week-stat">
+              <div class="lp-week-num" id="statSessionCount">--</div>
+              <div class="lp-week-label">总评测</div>
+            </div>
+            <div class="lp-week-stat">
+              <div class="lp-week-num" id="statAssessedNodes">--</div>
+              <div class="lp-week-label">已评知识点</div>
+            </div>
+            <div class="lp-week-stat">
+              <div class="lp-week-num" id="statAvgMastery">--</div>
+              <div class="lp-week-label">平均掌握度</div>
+            </div>
+          </div>
+          <div class="lp-dim-summary" id="dimSummary">
+            <div class="lp-dim-summary-row">
+              <div class="lp-dim-summary-label">理解</div>
+              <div class="lp-dim-summary-track">
+                <div class="lp-dim-summary-fill comp" id="dimCompFill" style="width:0%"></div>
+              </div>
+              <div class="lp-dim-summary-val" id="dimCompVal">--</div>
+            </div>
+            <div class="lp-dim-summary-row">
+              <div class="lp-dim-summary-label">记忆</div>
+              <div class="lp-dim-summary-track">
+                <div class="lp-dim-summary-fill mem" id="dimMemFill" style="width:0%"></div>
+              </div>
+              <div class="lp-dim-summary-val" id="dimMemVal">--</div>
+            </div>
+            <div class="lp-dim-summary-row">
+              <div class="lp-dim-summary-label">应用</div>
+              <div class="lp-dim-summary-track">
+                <div class="lp-dim-summary-fill app" id="dimAppFill" style="width:0%"></div>
+              </div>
+              <div class="lp-dim-summary-val" id="dimAppVal">--</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-learning-plan.js"></script>
+<script>
+initPCCommon('learning');
+</script>
+</body>
+</html>

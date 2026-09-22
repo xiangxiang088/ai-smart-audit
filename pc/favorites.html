@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的收藏 - AI智能教育助手</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-education.css">
+<link rel="stylesheet" href="/pc/css/pc-assessment.css">
+<link rel="stylesheet" href="/pc/css/pc-favorites.css">
+</head>
+<body class="pc-layout">
+
+<aside class="pc-sidebar" id="pcSidebar"></aside>
+
+<div class="pc-main">
+  <header class="pc-topbar" id="pcTopbar"></header>
+
+  <div class="pc-content">
+
+    <div class="pc-page-header">
+      <h1 class="pc-page-title">⭐ 我的收藏</h1>
+      <p class="pc-page-subtitle">收藏的题目，含题干、选项、答案与解析，方便复习</p>
+    </div>
+
+    <div class="favorites-layout">
+      <!-- 左侧分类栏 -->
+      <div class="favorites-sidebar">
+        <div class="favorites-sidebar-header">
+          <span>分类</span>
+          <button type="button" class="fav-add-cat-btn" onclick="showAddCategoryModal()" title="新增分类">＋</button>
+        </div>
+        <div id="categoryList" class="favorites-category-list"></div>
+      </div>
+
+      <!-- 右侧题目列表 -->
+      <div class="favorites-main">
+        <div class="favorites-toolbar">
+          <div id="currentCategoryLabel" class="favorites-current-cat">全部收藏</div>
+          <select id="subjectFilter" class="form-select" onchange="loadFavorites()">
+            <option value="">全部学科</option>
+          </select>
+        </div>
+        <div id="favoritesList" class="favorites-list"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-favorites.js"></script>
+<script>initPCCommon('favorites');</script>
+</body>
+</html>

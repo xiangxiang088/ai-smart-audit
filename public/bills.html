@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>账单 - AI智能记账</title>
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/bills.css">
+</head>
+<body>
+
+<div class="app-container">
+  <div class="top-bar">
+    <span class="top-bar-title">账单明细</span>
+    <button class="top-bar-action-btn" id="dietAiTopBtn" onclick="openDietAnalysis()" title="AI健康饮食建议">
+      <span class="top-bar-action-icon">🥗</span>
+      <span class="top-bar-action-text">饮食</span>
+    </button>
+    <button class="top-bar-action-btn" id="viewToggleBtn">
+      <span class="top-bar-action-icon">📅</span>
+      <span class="top-bar-action-text">日历</span>
+    </button>
+    <button class="top-bar-action-btn" id="filterToggleBtn">
+      <span class="top-bar-action-icon">🔍</span>
+      <span class="top-bar-action-text">筛选</span>
+    </button>
+  </div>
+  <div class="page-content">
+    <!-- AI智能记账栏 -->
+    <div class="ai-quick-bar">
+      <div class="ai-quick-input-wrap">
+        <span class="ai-quick-icon">🤖</span>
+        <input type="text" id="aiQuickInput" class="ai-quick-input" placeholder="说句话记账，如：今天打车花了25" maxlength="100">
+        <button class="ai-quick-btn" id="aiQuickBtn" onclick="aiQuickParse()">记一笔</button>
+        <button class="ai-quick-ocr-btn" id="aiQuickVoiceBtn" onclick="aiQuickVoice()" title="语音记账">🎤</button>
+        <button class="ai-quick-ocr-btn" id="aiOcrBtn" onclick="document.getElementById('aiOcrFile').click()" title="拍照识别小票">📷</button>
+        <input type="file" id="aiOcrFile" accept="image/*" capture="environment" style="display:none;" onchange="aiOcrRecognize(event)">
+      </div>
+      <div class="ai-quick-result" id="aiQuickResult" style="display:none;"></div>
+    </div>
+
+    <!-- 类型筛选 -->
+    <div class="filter-bar">
+      <button class="filter-btn active" data-filter="all">全部</button>
+      <button class="filter-btn" data-filter="expense">支出</button>
+      <button class="filter-btn" data-filter="income">收入</button>
+      <button class="filter-btn" data-filter="transfer">转账</button>
+    </div>
+
+    <!-- 高级筛选面板 -->
+    <div class="filter-section" id="filterSection" style="display:none;">
+      <div class="filter-row">
+        <span class="filter-label">日期</span>
+        <div style="flex:1;">
+          <div class="filter-date-row">
+            <input type="date" id="filterStartDate">
+            <span style="font-size:12px;color:var(--text-muted);">~</span>
+            <input type="date" id="filterEndDate">
+          </div>
+          <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+            <button class="filter-quick-btn" data-range="month">本月</button>
+            <button class="filter-quick-btn" data-range="lastmonth">上月</button>
+            <button class="filter-quick-btn" data-range="year">本年</button>
+            <button class="filter-quick-btn" data-range="lastyear">去年</button>
+          </div>
+        </div>
+      </div>
+      <div class="filter-row filter-row-cats">
+        <span class="filter-label">分类</span>
+        <div class="filter-cat-wrap">
+          <div class="cat-filter-bar" id="catFilterBar"></div>
+          <div class="cat-filter-bar cat-filter-sub" id="catSubFilterBar" style="display:none;"></div>
+        </div>
+      </div>
+      <div class="filter-row">
+        <button class="filter-reset-btn" id="filterResetBtn">重置筛选</button>
+      </div>
+    </div>
+
+    <!-- 日历视图 -->
+    <div class="calendar-view" id="calendarView" style="display:none;">
+      <div class="calendar-header">
+        <button class="top-bar-btn" id="calPrevMonth">‹</button>
+        <span id="calMonthText"></span>
+        <button class="top-bar-btn" id="calNextMonth">›</button>
+      </div>
+      <div class="calendar-grid" id="calendarGrid"></div>
+      <div id="calDayDetail" style="margin-top:12px;"></div>
+    </div>
+
+    <!-- 列表视图 -->
+    <div id="billsList"></div>
+  </div>
+</div>
+
+<script src="js/common.js"></script>
+<script src="js/bills.js"></script>
+<script>initCommon('bills');</script>
+</body>
+</html>

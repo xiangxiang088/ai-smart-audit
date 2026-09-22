@@ -1,0 +1,91 @@
+/* ===== 登录页 ===== */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.auth-card {
+  background: white;
+  border-radius: 20px;
+  padding: 40px 30px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.auth-logo {
+  text-align: center;
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+.auth-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.auth-subtitle {
+  text-align: center;
+  color: #64748b;
+  margin-bottom: 12px;
+}
+.auth-platform-tag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 auto 28px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+.auth-platform-mobile {
+  background: rgba(102,126,234,0.08);
+  border: 1px solid rgba(102,126,234,0.18);
+}
+.auth-platform-icon { font-size: 18px; }
+.auth-platform-name {
+  font-weight: 700;
+  color: #667eea;
+}
+.auth-platform-desc {
+  color: #94a3b8;
+  font-size: 12px;
+}
+.auth-form { display: flex; flex-direction: column; gap: 16px; }
+.auth-input-group { position: relative; }
+.auth-submit {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 10px;
+}
+.auth-switch {
+  text-align: center;
+  margin-top: 20px;
+  color: #64748b;
+}
+.auth-switch a { color: #667eea; font-weight: 600; }
+
+.auth-pc-link {
+  text-align: center;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+.auth-pc-link a {
+  font-size: 13px;
+  color: #94a3b8;
+  text-decoration: none;
+}
+.auth-pc-link a:hover { color: #667eea; }
+
+/* 响应式 */
+@media (max-width: 480px) {
+  .auth-card { padding: 30px 20px; }
+}

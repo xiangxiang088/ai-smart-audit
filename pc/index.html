@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>审计驾驶舱 - 工程审计智能审读</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-audit.css">
+<link rel="stylesheet" href="/pc/css/pc-visual-enhance.css">
+</head>
+<body>
+<div class="pc-wrapper">
+  <aside class="pc-sidebar" id="pcSidebar"></aside>
+  <div class="pc-main">
+    <header class="pc-topbar" id="pcTopbar"></header>
+    <main class="pc-content">
+
+      <!-- 全局统计卡 -->
+      <div class="cockpit-stat-grid" id="statGrid">
+        <div class="pc-card cockpit-stat"><div class="cockpit-stat-icon" style="background:#dbeafe;color:#1d4ed8;">📁</div><div><div class="cockpit-stat-num" id="statProjects">—</div><div class="cockpit-stat-label">审计项目</div></div></div>
+        <div class="pc-card cockpit-stat"><div class="cockpit-stat-icon" style="background:#cffafe;color:#0e7490;">📄</div><div><div class="cockpit-stat-num" id="statDocs">—</div><div class="cockpit-stat-label">资料总数</div></div></div>
+        <div class="pc-card cockpit-stat"><div class="cockpit-stat-icon" style="background:#d1fae5;color:#047857;">✅</div><div><div class="cockpit-stat-num" id="statParsed">—</div><div class="cockpit-stat-label">已解析</div></div></div>
+        <div class="pc-card cockpit-stat"><div class="cockpit-stat-icon" style="background:#fee2e2;color:#b91c1c;">⚠️</div><div><div class="cockpit-stat-num" id="statFindings">—</div><div class="cockpit-stat-label">疑点合计</div></div></div>
+      </div>
+
+      <!-- 最近审计项目 -->
+      <div class="pc-card" style="margin-bottom:16px;">
+        <div class="pc-card-title">
+          🕒 最近审计项目
+          <a href="/pc/audit-project.html" style="margin-left:auto;font-size:12px;color:var(--primary);text-decoration:none;font-weight:500;">全部项目 ›</a>
+        </div>
+        <div class="au-project-grid" id="recentGrid">
+          <div class="au-empty" style="grid-column:1/-1;"><span class="icon">📂</span>加载中...</div>
+        </div>
+      </div>
+
+      <!-- 项目核对状态 -->
+      <div class="pc-card">
+        <div class="pc-card-title">📊 项目核对状态</div>
+        <div style="overflow-x:auto;">
+          <table class="au-table">
+            <thead>
+              <tr><th>项目名称</th><th>资料</th><th>已解析</th><th>疑点</th><th>操作</th></tr>
+            </thead>
+            <tbody id="statusRows"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-home.js"></script>
+<script>initPCCommon('home');</script>
+</body>
+</html>

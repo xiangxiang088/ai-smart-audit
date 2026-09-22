@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智能评测 - AI智能教育助手</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-education.css">
+<link rel="stylesheet" href="/pc/css/pc-assessment.css">
+</head>
+<body>
+<script>
+window.addEventListener('error', function(e) {
+  document.body.insertAdjacentHTML('afterbegin',
+    '<div style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#fee2e2;color:#991b1b;padding:16px;font-size:14px;font-family:monospace;white-space:pre-wrap;border-bottom:3px solid #ef4444;">' +
+    '[JS ERROR] ' + (e.message || '') + '\n' +
+    'at ' + (e.filename || '') + ':' + (e.lineno || '') + ':' + (e.colno || '') + '\n' +
+    (e.error && e.error.stack ? e.error.stack : '') +
+    '</div>');
+});
+window.addEventListener('unhandledrejection', function(e) {
+  document.body.insertAdjacentHTML('afterbegin',
+    '<div style="position:fixed;top:0;left:0;right:0;z-index:99999;background:#fef3c7;color:#92400e;padding:16px;font-size:14px;font-family:monospace;white-space:pre-wrap;border-bottom:3px solid #f59e0b;">' +
+    '[UNHANDLED PROMISE REJECTION] ' + (e.reason && e.reason.message ? e.reason.message : String(e.reason)) +
+    '</div>');
+});
+</script>
+<div class="pc-wrapper">
+  <aside class="pc-sidebar" id="pcSidebar"></aside>
+  <div class="pc-main">
+    <header class="pc-topbar" id="pcTopbar"></header>
+    <main class="pc-content">
+
+      <!-- 页面容器（通过JS切换显示不同阶段） -->
+
+      <!-- 阶段1：选择学科 -->
+      <div id="stageSelect" class="assessment-stage">
+        <div class="pc-card" style="max-width:820px;margin:0 auto;">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <div class="pc-card-title" style="margin-bottom:0;">📝 开始智能评测</div>
+            <a href="/pc/assessment-history.html" class="pc-topbar-btn" style="text-decoration:none;">📊 查看评测历史</a>
+          </div>
+          <p style="color:var(--text-secondary);margin:12px 0 20px;line-height:1.6;">
+            选择学段和学科开始评测，系统将根据您的答题情况自适应调整题目难度，快速诊断您的知识掌握情况。
+          </p>
+
+          <!-- 学段 Tabs -->
+          <div class="edu-level-tabs" id="levelTabs">
+            <button class="edu-level-tab" onclick="switchLevel('primary')" data-level="primary">🏫 小学</button>
+            <button class="edu-level-tab active" onclick="switchLevel('junior')" data-level="junior">🏫 初中</button>
+            <button class="edu-level-tab" onclick="switchLevel('high')" data-level="high">🏫 高中</button>
+            <button class="edu-level-tab" onclick="switchLevel('university')" data-level="university">🎓 大学</button>
+          </div>
+
+          <!-- 学科卡片网格 -->
+          <div id="subjectList" class="edu-subject-card-grid">
+            <div class="pc-empty"><div class="pc-empty-icon">⏳</div><div class="pc-empty-text">加载学科中...</div></div>
+          </div>
+
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+              <div>
+                <label style="font-size:13px;color:var(--text-secondary);display:block;margin-bottom:6px;">题目数量</label>
+                <select id="questionCount" class="form-select" style="width:100%;">
+                  <option value="10">10题（快速）</option>
+                  <option value="15" selected>15题（标准）</option>
+                  <option value="20">20题（完整）</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size:13px;color:var(--text-secondary);display:block;margin-bottom:6px;">评测类型</label>
+                <select id="sessionType" class="form-select" style="width:100%;">
+                  <option value="entry">入学水平评测</option>
+                  <option value="scan">知识点漏洞扫描</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:20px;text-align:center;">
+            <button id="startAssessmentBtn" class="pc-topbar-btn primary" onclick="startAssessment()" style="padding:12px 40px;font-size:15px;">🚀 开始评测</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 阶段2：答题进行中 -->
+      <div id="stageQuestion" class="assessment-stage" style="display:none;">
+        <div class="assessment-layout">
+          <!-- 左侧答题卡（可切换收起） -->
+          <div class="assessment-answer-card" id="answerCardWrap">
+            <div class="assessment-answer-card-header" onclick="toggleAnswerCard()">
+              <span>📋 答题卡</span>
+              <span id="answerCardToggleIcon">▾</span>
+            </div>
+            <div id="answerCard" class="assessment-answer-card-body"></div>
+          </div>
+
+          <!-- 右侧主区域 -->
+          <div class="assessment-main">
+          <!-- 进度条 -->
+          <div class="assessment-progress-bar">
+            <div class="assessment-progress-info">
+              <span id="progressText">第 1 题 / 共 15 题</span>
+              <span id="subjectLabel" style="color:var(--text-secondary);font-size:13px;"></span>
+              <span id="timerDisplay" class="assessment-timer">00:00</span>
+            </div>
+            <div class="assessment-progress-track">
+              <div id="progressFill" class="assessment-progress-fill" style="width:0%"></div>
+            </div>
+          </div>
+
+          <!-- 题目卡片 -->
+          <div class="pc-card assessment-question-card">
+            <div class="assessment-question-meta">
+              <span id="questionType" class="edu-badge">单选题</span>
+              <span id="questionDifficulty" class="edu-badge difficulty-3">⭐⭐⭐</span>
+              <button type="button" id="questionFavBtn" class="fav-star-btn" onclick="toggleCurrentQuestionFavorite()" title="收藏本题">☆</button>
+            </div>
+            <div id="questionContent" class="assessment-question-text">
+              <!-- 题干 -->
+            </div>
+            <!-- 选项区 (选择题) -->
+            <div id="optionsArea" class="assessment-options"></div>
+            <!-- 填空区 (填空题) -->
+            <div id="fillArea" style="display:none;margin-top:20px;">
+              <input type="text" id="fillAnswer" class="form-input" placeholder="请输入答案..." style="width:100%;font-size:15px;">
+            </div>
+            <!-- 主观区 (主观题) -->
+            <div id="subjectiveArea" style="display:none;margin-top:20px;">
+              <textarea id="subjectiveAnswer" class="form-input" placeholder="请输入您的解题过程和答案..." rows="5" style="width:100%;font-size:14px;resize:vertical;"></textarea>
+            </div>
+
+            <!-- 答题后显示的解析区 -->
+            <div id="analysisArea" class="assessment-analysis" style="display:none;"></div>
+
+            <!-- 操作按钮 -->
+            <div id="actionArea" class="assessment-action-area">
+              <button id="submitBtn" class="pc-topbar-btn primary" onclick="submitAnswer()" style="padding:10px 32px;font-size:15px;">
+                提交答案
+              </button>
+              <button id="nextBtn" class="pc-topbar-btn" onclick="nextQuestion()" style="display:none;padding:10px 32px;font-size:15px;">
+                下一题 ›
+              </button>
+              <button id="finishBtn" class="pc-topbar-btn" onclick="finishAssessment()" style="display:none;padding:10px 32px;font-size:15px;background:var(--success,#10b981);color:#fff;">
+                查看结果 🎉
+              </button>
+              <button class="pc-topbar-btn" onclick="abortAssessment()" style="color:var(--text-muted);font-size:13px;margin-left:auto;">
+                提前结束
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 阶段3：评测结果 -->
+      <div id="stageResult" class="assessment-stage" style="display:none;">
+        <div class="pc-card" style="max-width:800px;margin:0 auto;">
+          <div class="assessment-result-header">
+            <div id="resultIcon" class="assessment-result-icon">🎉</div>
+            <div class="assessment-result-score">
+              <div id="resultScoreNum" class="assessment-score-num">--</div>
+              <div style="color:var(--text-secondary);font-size:14px;">本次得分（百分制）</div>
+            </div>
+            <div id="resultStats" class="assessment-result-stats"></div>
+          </div>
+
+          <!-- AI总结 -->
+          <div id="aiSummaryArea" class="assessment-ai-summary" style="display:none;">
+            <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">✨ AI学习建议</div>
+            <div id="aiSummaryText" style="line-height:1.7;font-size:14px;"></div>
+          </div>
+
+          <!-- 薄弱知识点 -->
+          <div id="weakPointsArea" style="margin-top:20px;">
+            <div class="pc-card-title" style="padding:0 0 12px 0;border-bottom:1px solid var(--border);margin-bottom:12px;">🔍 薄弱知识点</div>
+            <div id="weakPointsList"></div>
+          </div>
+
+          <!-- 掌握较好的知识点 -->
+          <div id="strongPointsArea" style="margin-top:16px;">
+            <div class="pc-card-title" style="padding:0 0 12px 0;border-bottom:1px solid var(--border);margin-bottom:12px;">✅ 掌握较好的知识点</div>
+            <div id="strongPointsList"></div>
+          </div>
+
+          <!-- 答题详情 -->
+          <div id="answerDetailArea" style="margin-top:16px;">
+            <div class="pc-card-title" style="padding:0 0 12px 0;border-bottom:1px solid var(--border);margin-bottom:12px;">📝 答题详情</div>
+            <div id="answerDetailList"></div>
+          </div>
+
+          <!-- 操作按钮 -->
+          <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;">
+            <button id="analyzeErrorsBtn" class="pc-topbar-btn primary" onclick="analyzeErrors()" style="padding:10px 24px;">
+              🔍 AI错因分析
+            </button>
+            <button class="pc-topbar-btn" onclick="viewProfile()" style="padding:10px 24px;">
+              📊 查看能力画像
+            </button>
+            <button class="pc-topbar-btn" onclick="restartAssessment()" style="padding:10px 24px;">
+              🔄 再次评测
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- 收藏分类选择弹窗 -->
+<div class="modal" id="favCategoryModal">
+  <div class="modal-content" style="max-width:420px!important;">
+    <div class="modal-header">
+      <button class="modal-close" onclick="closeFavCategoryModal()">✕</button>
+      <span class="modal-title">选择收藏分类</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <div id="favCategoryList" style="display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto;">
+        <div style="color:var(--text-muted);font-size:13px;padding:8px 0;">加载中...</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+        <input type="text" id="newFavCategoryName" class="form-input" placeholder="新建分类名称..." style="flex:1;font-size:14px;" onkeydown="if(event.key==='Enter'){event.preventDefault();createFavCategory();}">
+        <button class="pc-topbar-btn" onclick="createFavCategory()" style="white-space:nowrap;">+ 新建</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-assessment.js"></script>
+<script>initPCCommon('assessment');</script>
+</body>
+</html>

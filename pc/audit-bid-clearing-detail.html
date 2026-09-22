@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>清标任务详情 - 工程审计智能审读</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-audit.css">
+<link rel="stylesheet" href="/pc/css/pc-visual-enhance.css">
+</head>
+<body>
+<div class="pc-wrapper">
+  <aside class="pc-sidebar" id="pcSidebar"></aside>
+  <div class="pc-main">
+    <header class="pc-topbar" id="pcTopbar"></header>
+    <main class="pc-content">
+
+      <div id="noSession" style="display:none;">
+        <div class="au-empty">
+          <span class="icon">📝</span>清标任务不存在或已删除
+        </div>
+        <div style="text-align:center;margin-top:16px;">
+          <button class="au-btn" onclick="location.href='/pc/audit-bid-clearing.html'">返回清标任务列表</button>
+        </div>
+      </div>
+
+      <div id="sessionView" style="display:none;">
+        <div class="au-project-bar">
+          <button class="au-btn sm" onclick="location.href='/pc/audit-bid-clearing.html'">‹ 返回列表</button>
+          <h2 id="sessionTitle">清标任务</h2>
+          <button class="au-btn sm" id="btnRename" style="margin-left:auto;">✏ 重命名</button>
+          <button class="au-btn danger sm" id="btnDelete">删除任务</button>
+        </div>
+
+        <!-- 资料配置 -->
+        <div class="pc-card">
+          <div class="pc-card-title">📋 资料配置
+            <span style="font-size:12px;color:#94a3b8;font-weight:400;">上传 1 份招标控制价 + 多家投标方报价文件（Excel / PDF / Word），全部解析完成后运行清标分析</span>
+          </div>
+
+          <div class="bc-section">
+            <div class="bc-section-title">🏷️ 招标控制价</div>
+            <div id="controlSlot"></div>
+          </div>
+
+          <div class="bc-section">
+            <div class="bc-section-title">🏢 投标方 <span style="font-size:12px;color:#94a3b8;font-weight:400;">最多10家，点击方块上传报价</span></div>
+            <div id="partyList"></div>
+          </div>
+        </div>
+
+        <!-- 分析 + 报告 -->
+        <div class="pc-card">
+          <div class="bc-report-bar">
+            <div class="pc-card-title" style="margin:0;">🧾 清标报告</div>
+            <div style="margin-left:auto;display:flex;gap:8px;">
+              <button class="au-btn primary sm" id="btnAnalyze">▶ 开始清标分析</button>
+              <button class="au-btn sm" id="btnDownload">⬇ 下载报告</button>
+            </div>
+          </div>
+          <div id="statusLine" class="bc-status-line"></div>
+          <div id="reportWrap" class="au-md" style="display:none;"></div>
+          <div id="reportEmpty" class="au-empty" style="display:none;">
+            <span class="icon">🧾</span>尚未生成报告——资料全部解析完成后点击「开始清标分析」
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- 隐藏的文件选择框 -->
+<input type="file" id="controlFileInput" accept=".pdf,.docx,.xlsx,.xls,.png,.jpg,.jpeg,.webp" style="display:none">
+<input type="file" id="partyFileInput" accept=".pdf,.docx,.xlsx,.xls,.png,.jpg,.jpeg,.webp" multiple style="display:none">
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-md.js"></script>
+<script src="/pc/js/pc-audit-bid-clearing-detail.js"></script>
+<script>initPCCommon('audit-bid-clearing');</script>
+</body>
+</html>

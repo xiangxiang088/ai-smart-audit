@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>首页 - AI智能记账</title>
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/home.css">
+</head>
+<body>
+
+<!-- 首页 -->
+<div class="app-container">
+  <div class="home-header">
+    <div class="month-selector">
+      <button class="month-btn" id="prevMonth">‹</button>
+      <span class="month-text" id="currentMonth">2026年7月</span>
+      <button class="month-btn" id="nextMonth">›</button>
+    </div>
+    <div class="asset-overview">
+      <div class="asset-label">本月结余</div>
+      <div class="asset-value" id="monthBalance">¥0.00</div>
+    </div>
+    <div class="income-expense-row">
+      <div class="ie-item">
+        <div class="ie-label">本月收入</div>
+        <div class="ie-value" id="homeIncome">¥0.00</div>
+      </div>
+      <div class="ie-item">
+        <div class="ie-label">本月支出</div>
+        <div class="ie-value" id="homeExpense">¥0.00</div>
+      </div>
+    </div>
+  </div>
+  <div class="content-area">
+    <div class="quick-stats">
+      <div class="stat-item">
+        <div class="stat-label">今日支出</div>
+        <div class="stat-value expense" id="todayExpense">¥0.00</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">本月笔数</div>
+        <div class="stat-value" id="monthCount">0</div>
+      </div>
+    </div>
+
+    <div class="shortcuts-grid">
+      <a href="/bills.html?view=calendar" class="shortcut-item">
+        <span class="shortcut-icon">📅</span>
+        <span class="shortcut-text">日历视图</span>
+      </a>
+      <a href="/loans.html" class="shortcut-item">
+        <span class="shortcut-icon">💰</span>
+        <span class="shortcut-text">借贷中心</span>
+      </a>
+      <a href="/reports.html" class="shortcut-item">
+        <span class="shortcut-icon">📊</span>
+        <span class="shortcut-text">数据报表</span>
+      </a>
+      <a href="/bills.html?diet=1" class="shortcut-item">
+        <span class="shortcut-icon">🥗</span>
+        <span class="shortcut-text">健康助手</span>
+      </a>
+    </div>
+
+    <div class="card" id="budgetCard">
+      <div class="card-title">🎯 预算管理 <span class="more" id="budgetSetBtn">设置</span></div>
+      <div id="budgetList">
+        <div class="empty-hint">暂无预算，点击设置</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📊 支出排行 <a href="reports.html" class="more">查看更多</a></div>
+      <div id="categoryRank"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📝 最近记录 <a href="bills.html" class="more">查看全部</a></div>
+      <div id="recentRecords"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 预算设置弹窗 -->
+<div class="modal" id="budgetModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="closeBudgetModal()">✕</button>
+      <span class="modal-title">设置月度预算</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">月度总预算</label>
+        <input type="number" id="budgetAmountInput" placeholder="输入预算金额" step="0.01">
+      </div>
+      <button class="btn-primary" onclick="saveBudget()">保存预算</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/common.js"></script>
+<script src="js/home.js"></script>
+<script>
+initCommon('home');
+</script>
+</body>
+</html>

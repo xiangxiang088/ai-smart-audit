@@ -1,0 +1,403 @@
+/* ===== 账户页 - 分组布局 ===== */
+.acc-group {
+  margin-bottom: 18px;
+}
+.acc-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 4px 8px;
+}
+.acc-group-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.acc-group-icon {
+  font-size: 1rem;
+}
+.acc-group-total {
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.acc-group-total.debt {
+  color: var(--danger);
+}
+
+/* ----- 彩色模块式（现金/微信/支付宝/理财/其他） ----- */
+.acc-group-body.list-style {
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  color: white;
+}
+.acc-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  position: relative;
+}
+.acc-list-item:last-child {
+  border-bottom: none;
+}
+.acc-list-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.acc-list-name {
+  font-weight: 500;
+  font-size: 0.9375rem;
+  color: rgba(255,255,255,0.9);
+}
+.acc-list-balance {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: white;
+}
+.acc-list-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+.acc-list-actions button {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.18);
+  color: white;
+  backdrop-filter: blur(4px);
+  transition: background 0.15s;
+}
+.acc-list-actions button:active {
+  background: rgba(255,255,255,0.35);
+}
+
+/* ----- 卡片式（银行卡/信用卡） ----- */
+.acc-group-body.card-style {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.bank-card {
+  position: relative;
+  border-radius: var(--radius);
+  padding: 18px;
+  color: white;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.bank-card::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+}
+.bank-card::after {
+  content: '';
+  position: absolute;
+  bottom: -50px;
+  right: 30px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+}
+.debit-card {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 60%, #60a5fa 100%);
+}
+.credit-card {
+  background: linear-gradient(135deg, #7c2d12 0%, #dc2626 55%, #f87171 100%);
+}
+.bank-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+.bank-card-name {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.bank-card-icon {
+  font-size: 1.5rem;
+}
+.bank-card-balance {
+  margin-top: 18px;
+  position: relative;
+  z-index: 1;
+}
+.bank-card-label {
+  display: block;
+  font-size: 0.75rem;
+  opacity: 0.8;
+  margin-bottom: 4px;
+}
+.bank-card-amount {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.bank-card-amount.debt {
+  color: #fef08a;
+}
+.bank-card-sub {
+  font-size: 0.7rem;
+  opacity: 0.75;
+  margin-top: 4px;
+  position: relative;
+  z-index: 1;
+}
+.cc-due-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  border-radius: 12px;
+  margin-top: 8px;
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
+}
+.cc-due-badge.overdue {
+  background: rgba(239,68,68,0.9);
+  color: #fff;
+}
+.cc-due-badge.soon {
+  background: rgba(245,158,11,0.9);
+  color: #fff;
+}
+.bank-card.cc-overdue {
+  box-shadow: 0 0 0 2px rgba(239,68,68,0.6), 0 4px 12px rgba(239,68,68,0.2);
+}
+.bank-card.cc-due-soon {
+  box-shadow: 0 0 0 2px rgba(245,158,11,0.6), 0 4px 12px rgba(245,158,11,0.2);
+}
+.bank-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  position: relative;
+  z-index: 1;
+}
+.bank-card-actions button {
+  flex: 1;
+  padding: 8px 4px;
+  background: rgba(255,255,255,0.18);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  backdrop-filter: blur(4px);
+  transition: background 0.15s;
+}
+.bank-card-actions button:active {
+  background: rgba(255,255,255,0.32);
+}
+
+/* ===== 流水弹窗 ===== */
+.tx-modal-content {
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+}
+.tx-filter-bar {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.tx-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tx-date-input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  background: var(--card);
+  color: var(--text-primary);
+}
+.tx-filter-sep {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.tx-filter-btn {
+  padding: 6px 12px;
+  background: var(--primary);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  flex-shrink: 0;
+}
+.tx-reset-btn {
+  padding: 6px 12px;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  flex-shrink: 0;
+}
+
+.tx-list {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 16px 16px;
+}
+
+.tx-date-group {
+  margin-top: 12px;
+}
+.tx-date-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  position: sticky;
+  top: 0;
+  background: var(--card);
+  z-index: 1;
+}
+.tx-date-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.tx-date-summary {
+  font-size: 0.75rem;
+  display: flex;
+  gap: 8px;
+}
+.tx-in { color: var(--success); }
+.tx-out { color: var(--danger); }
+
+.tx-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.tx-item:last-child {
+  border-bottom: none;
+}
+.tx-item-left {
+  flex: 1;
+  min-width: 0;
+}
+.tx-item-type {
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+.tx-item-note {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin-top: 3px;
+  line-height: 1.4;
+  word-break: break-all;
+}
+.tx-item-meta {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+  display: flex;
+  gap: 4px;
+}
+.tx-item-amount {
+  font-size: 1rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+.tx-item-amount.positive { color: var(--success); }
+.tx-item-amount.negative { color: var(--danger); }
+
+.tx-loading, .tx-empty, .tx-load-more-hint, .tx-total-hint, .tx-loading-more {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.tx-empty .emoji {
+  font-size: 32px;
+}
+.tx-loading-more {
+  flex-direction: row;
+  justify-content: center;
+}
+.tx-load-more-hint {
+  padding: 12px;
+}
+
+.tx-loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: tx-spin 0.8s linear infinite;
+}
+.tx-loading-spinner.small {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+@keyframes tx-spin {
+  to { transform: rotate(360deg); }
+}
+.btn-danger {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: #ef4444;
+  color: white;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+.btn-danger:active { opacity: 0.9; }
+.total-assets-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.total-assets-label { font-size: 0.9375rem; opacity: 0.8; }
+.total-assets-value { font-size: 32px; font-weight: 800; margin: 8px 0; }
+.total-assets-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.2);
+}
+.assets-item-label { font-size: 0.8125rem; opacity: 0.8; }
+.assets-item-value { font-size: 16px; font-weight: 600; }

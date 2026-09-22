@@ -1,0 +1,108 @@
+/* ===== PC端账户页专用样式 ===== */
+
+/* 账户卡片操作区 */
+.pc-account-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.2);
+}
+.pc-account-action-btn {
+  flex: 1;
+  padding: 5px 0;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.25);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-align: center;
+}
+.pc-account-action-btn:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+/* 流水弹窗 */
+.tx-date-group { margin-bottom: 4px; }
+.tx-date-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0 6px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2px;
+  position: sticky;
+  top: 0;
+  background: var(--card);
+  z-index: 1;
+}
+.tx-date-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+.tx-date-summary { font-size: 12px; display: flex; gap: 8px; }
+.tx-in { color: var(--success); font-weight: 500; }
+.tx-out { color: var(--danger); font-weight: 500; }
+
+.tx-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+.tx-item:last-child { border-bottom: none; }
+.tx-item-left { flex: 1; min-width: 0; }
+.tx-item-type { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+.tx-item-note { font-size: 12px; color: var(--text-secondary); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tx-item-meta { font-size: 11px; color: var(--text-muted); margin-top: 3px; display: flex; gap: 6px; flex-wrap: wrap; }
+.tx-item-amount { font-size: 15px; font-weight: 600; flex-shrink: 0; white-space: nowrap; }
+.tx-item-amount.positive { color: var(--success); }
+.tx-item-amount.negative { color: var(--danger); }
+
+.tx-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 40px 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+.tx-loading-spinner {
+  width: 20px; height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: tx-spin 0.8s linear infinite;
+}
+.tx-loading-spinner.small { width: 14px; height: 14px; }
+@keyframes tx-spin { to { transform: rotate(360deg); } }
+
+.tx-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+.tx-total-hint {
+  text-align: center;
+  padding: 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.tx-load-more-hint {
+  text-align: center;
+  padding: 12px;
+  color: var(--primary);
+  font-size: 12px;
+}
+.tx-loading-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+}

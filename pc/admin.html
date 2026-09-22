@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>后台管理 - 工程审计智能审读</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-admin.css">
+</head>
+<body>
+<div class="pc-wrapper">
+  <aside class="pc-sidebar" id="pcSidebar"></aside>
+  <div class="pc-main">
+    <header class="pc-topbar" id="pcTopbar"></header>
+    <main class="pc-content">
+
+      <!-- Tab 切换栏 -->
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchAdminTab('audit-projects')">📁 审计项目</button>
+        <button class="admin-tab" onclick="switchAdminTab('notices')">📢 通知公告</button>
+        <button class="admin-tab" onclick="switchAdminTab('users')">👥 用户管理</button>
+        <button class="admin-tab" onclick="switchAdminTab('roles')">🎭 角色管理</button>
+        <button class="admin-tab" onclick="switchAdminTab('menus')">📋 菜单管理</button>
+        <button class="admin-tab" onclick="switchAdminTab('dict')">📖 字典管理</button>
+      </div>
+
+      <!-- ===== Tab 1：审计项目全局管理 ===== -->
+      <div id="tab-audit-projects" class="admin-panel">
+        <div class="pc-card">
+          <div class="pc-card-title">审计项目（全局）</div>
+          <div class="admin-toolbar">
+            <input type="text" id="adminProjectKeyword" placeholder="搜索项目名称/编号" style="min-width:220px;padding:7px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;">
+            <button class="admin-toolbar-btn search" onclick="loadAdminProjects()">🔍 搜索</button>
+            <button id="btnAdminProjectAdd" class="admin-toolbar-btn primary" onclick="openAdminProjectModal(null)">+ 新增项目</button>
+          </div>
+          <div id="adminProjectWrap">
+            <div class="admin-empty">加载中...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Tab 4：通知公告 ===== -->
+      <div id="tab-notices" class="admin-panel hidden">
+        <div class="pc-card">
+          <div class="pc-card-title">
+            通知公告
+            <button id="btnNoticeAdd" class="pc-btn pc-btn-primary" onclick="openNoticeAdminModal(null)" style="margin-left:auto;padding:6px 16px;font-size:13px;">
+              + 新增公告
+            </button>
+          </div>
+          <div class="admin-toolbar">
+            <select id="noticeFilterStatus" style="min-width:120px;">
+              <option value="">全部状态</option>
+              <option value="0">已发布</option>
+              <option value="1">草稿</option>
+            </select>
+            <select id="noticeFilterType" style="min-width:120px;">
+              <option value="">全部类型</option>
+              <option value="1">通知</option>
+              <option value="2">公告</option>
+            </select>
+            <button class="admin-toolbar-btn search" onclick="loadAdminNotices(1)">🔍 搜索</button>
+          </div>
+          <div id="noticeTableWrap">
+            <div class="admin-empty">加载中...</div>
+          </div>
+          <div id="noticePagination" class="admin-pagination"></div>
+        </div>
+      </div>
+
+      <!-- ===== Tab 5：用户管理 ===== -->
+      <div id="tab-users" class="admin-panel hidden">
+        <div class="pc-card">
+          <div class="pc-card-title">用户管理</div>
+          <div class="admin-toolbar">
+            <input type="text" id="userKeyword" placeholder="搜索用户名/昵称" style="min-width:200px;padding:7px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;">
+            <button class="admin-toolbar-btn search" onclick="loadAdminUsers(1)">🔍 搜索</button>
+            <button id="btnUserAdd" class="admin-toolbar-btn" onclick="openCreateUserModal()" style="background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff;font-weight:600;">➕ 新增用户</button>
+          </div>
+          <div id="userTableWrap">
+            <div class="admin-empty">加载中...</div>
+          </div>
+          <div id="userPagination" class="admin-pagination"></div>
+        </div>
+      </div>
+
+      <!-- ===== Tab 6：角色管理 ===== -->
+      <div id="tab-roles" class="admin-panel hidden">
+        <div class="pc-card">
+          <div class="pc-card-title">
+            角色管理
+            <button id="btnRoleAdd" class="pc-btn pc-btn-primary" onclick="openRoleModal(null)" style="margin-left:auto;padding:6px 16px;font-size:13px;">
+              + 新增角色
+            </button>
+          </div>
+          <div id="roleTableWrap">
+            <div class="admin-empty">加载中...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Tab 7：菜单管理 ===== -->
+      <div id="tab-menus" class="admin-panel hidden">
+        <div class="pc-card">
+          <div class="pc-card-title">
+            菜单管理
+            <button id="btnMenuAdd" class="pc-btn pc-btn-primary" onclick="openMenuModal(null)" style="margin-left:auto;padding:6px 16px;font-size:13px;">
+              + 新增菜单
+            </button>
+          </div>
+          <div id="menuTableWrap">
+            <div class="admin-empty">加载中...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Tab 8：字典管理 ===== -->
+      <div id="tab-dict" class="admin-panel hidden">
+        <div class="pc-card">
+          <div class="pc-card-title">
+            字典管理
+            <button id="btnDictAdd" class="pc-btn pc-btn-primary" onclick="openDictModal(null)" style="margin-left:auto;padding:6px 16px;font-size:13px;">
+              + 新增字典项
+            </button>
+          </div>
+          <div class="admin-toolbar">
+            <select id="dictFilterType" onchange="loadAdminDict()" style="min-width:160px;">
+              <option value="">全部类型</option>
+            </select>
+          </div>
+          <div id="dictTableWrap">
+            <div class="admin-empty">加载中...</div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ===== 审计项目新增/编辑弹窗 ===== -->
+<div id="adminProjectModal" class="admin-modal-overlay hidden">
+  <div class="admin-modal">
+    <div class="admin-modal-header">
+      <span id="adminProjectModalTitle">新增项目</span>
+      <button class="admin-modal-close" onclick="closeAdminProjectModal()">✕</button>
+    </div>
+    <div class="admin-modal-body">
+      <input type="hidden" id="apId">
+      <div class="admin-form-row">
+        <label>项目名称（建议脱敏代号，如「某厂区改造项目」） <span style="color:red">*</span></label>
+        <input type="text" id="apName" placeholder="项目名称" maxlength="200">
+      </div>
+      <div class="admin-form-row">
+        <label>项目编号</label>
+        <input type="text" id="apCode" placeholder="项目编号" maxlength="64">
+      </div>
+      <div class="admin-form-row">
+        <label>审计类型</label>
+        <select id="apType">
+          <option value="cost">造价/结算审计</option>
+        </select>
+      </div>
+      <div class="admin-form-row">
+        <label>审计/工程期间</label>
+        <input type="text" id="apPeriod" placeholder="如 2025.03-2026.08" maxlength="100">
+      </div>
+      <div class="admin-form-row">
+        <label>项目说明</label>
+        <textarea id="apDesc" placeholder="项目说明" rows="3" maxlength="500" style="resize:vertical;"></textarea>
+      </div>
+      <div class="admin-form-row" id="apStatusRow" style="display:none;">
+        <label>状态</label>
+        <select id="apStatus">
+          <option value="0">进行中</option>
+          <option value="1">已完成</option>
+        </select>
+      </div>
+    </div>
+    <div class="admin-modal-footer">
+      <button class="pc-btn" onclick="closeAdminProjectModal()">取消</button>
+      <button class="pc-btn pc-btn-primary" onclick="saveAdminProject()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 字典新增/编辑弹窗 ===== -->
+<div id="dictModal" class="admin-modal-overlay hidden">
+  <div class="admin-modal">
+    <div class="admin-modal-header">
+      <span id="dictModalTitle">新增字典项</span>
+      <button class="admin-modal-close" onclick="closeDictModal()">✕</button>
+    </div>
+    <div class="admin-modal-body">
+      <input type="hidden" id="dictId">
+      <div class="admin-form-row">
+        <label>字典类型 <span style="color:red">*</span></label>
+        <input type="text" id="dictType" placeholder="如：education_level">
+      </div>
+      <div class="admin-form-row">
+        <label>编码 <span style="color:red">*</span></label>
+        <input type="text" id="dictCode" placeholder="如：primary">
+      </div>
+      <div class="admin-form-row">
+        <label>显示名称 <span style="color:red">*</span></label>
+        <input type="text" id="dictLabel" placeholder="如：小学">
+      </div>
+      <div class="admin-form-row">
+        <label>图标（可选，emoji）</label>
+        <input type="text" id="dictIcon" placeholder="如：🏫" maxlength="4">
+      </div>
+      <div class="admin-form-row">
+        <label>排序号（数字越小越靠前）</label>
+        <input type="number" id="dictSort" value="0" min="0">
+      </div>
+      <div class="admin-form-row">
+        <label>状态</label>
+        <select id="dictStatus">
+          <option value="1" selected>启用</option>
+          <option value="0">停用</option>
+        </select>
+      </div>
+    </div>
+    <div class="admin-modal-footer">
+      <button class="pc-btn" onclick="closeDictModal()">取消</button>
+      <button class="pc-btn pc-btn-primary" onclick="saveDict()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 通知公告新增/编辑弹窗 ===== -->
+<div id="noticeAdminModal" class="admin-modal-overlay hidden">
+  <div class="admin-modal" style="max-width:640px;">
+    <div class="admin-modal-header">
+      <span id="noticeAdminModalTitle">新增公告</span>
+      <button class="admin-modal-close" onclick="closeNoticeAdminModal()">✕</button>
+    </div>
+    <div class="admin-modal-body">
+      <input type="hidden" id="noticeAdminId">
+      <div class="admin-form-row">
+        <label>标题 <span style="color:red">*</span></label>
+        <input type="text" id="noticeAdminTitle" placeholder="公告标题（100字以内）" maxlength="100">
+      </div>
+      <div class="admin-form-row">
+        <label>类型</label>
+        <select id="noticeAdminType">
+          <option value="1">通知</option>
+          <option value="2">公告</option>
+        </select>
+      </div>
+      <div class="admin-form-row">
+        <label>状态</label>
+        <select id="noticeAdminStatus">
+          <option value="0">已发布</option>
+          <option value="1">草稿</option>
+        </select>
+      </div>
+      <div class="admin-form-row">
+        <label>弹窗公告</label>
+        <select id="noticeAdminPopup">
+          <option value="0">否（普通列表通知）</option>
+          <option value="1">是（用户登录后弹窗提示）</option>
+        </select>
+      </div>
+      <div class="admin-form-row">
+        <label>内容 <span style="color:red">*</span></label>
+        <textarea id="noticeAdminContent" placeholder="公告正文内容（10000字以内）" rows="6" style="resize:vertical;"></textarea>
+      </div>
+    </div>
+    <div class="admin-modal-footer">
+      <button class="pc-btn" onclick="closeNoticeAdminModal()">取消</button>
+      <button class="pc-btn pc-btn-primary" onclick="saveNoticeAdmin()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 新增用户弹窗 ===== -->
+<div id="createUserModal" class="admin-modal-overlay hidden">
+  <div class="admin-modal">
+    <div class="admin-modal-header">
+      <span>新增用户</span>
+      <button class="admin-modal-close" onclick="closeCreateUserModal()">✕</button>
+    </div>
+    <div class="admin-modal-body">
+      <div class="admin-form-row">
+        <label>用户名 <span style="color:#ef4444;">*</span></label>
+        <input type="text" id="createUserUsername" placeholder="登录用户名" maxlength="30">
+      </div>
+      <div class="admin-form-row">
+        <label>昵称</label>
+        <input type="text" id="createUserNickname" placeholder="显示名称（不填则同用户名）" maxlength="20">
+      </div>
+      <div class="admin-form-row">
+        <label>密码 <span style="color:#ef4444;">*</span></label>
+        <input type="password" id="createUserPassword" placeholder="至少6位" maxlength="50">
+      </div>
+    </div>
+    <div class="admin-modal-footer">
+      <button class="pc-btn" onclick="closeCreateUserModal()">取消</button>
+      <button class="pc-btn pc-btn-primary" onclick="saveCreateUser()">创建</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 用户编辑弹窗 ===== -->
+<div id="userEditModal" class="admin-modal-overlay hidden">
+  <div class="admin-modal">
+    <div class="admin-modal-header">
+      <span>编辑用户</span>
+      <button class="admin-modal-close" onclick="closeUserEditModal()">✕</button>
+    </div>
+    <div class="admin-modal-body">
+      <input type="hidden" id="userEditId">
+      <div class="admin-form-row">
+        <label>用户名</label>
+        <div id="userEditUsername" style="font-size:13px;color:var(--text-secondary);padding:8px 0;"></div>
+      </div>
+      <div class="admin-form-row">
+        <label>昵称</label>
+        <input type="text" id="userEditNickname" placeholder="用户昵称" maxlength="20">
+      </div>
+      <div class="admin-form-row">
+        <label>邮箱</label>
+        <input type="email" id="userEditEmail" placeholder="电子邮箱">
+      </div>
+    </div>
+    <div class="admin-modal-footer">
+      <button class="pc-btn" onclick="closeUserEditModal()">取消</button>
+      <button class="pc-btn pc-btn-primary" onclick="saveUserEdit()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 用户分配角色弹窗 ===== -->
+<div id="userRoleModal" class="admin-modal-overlay hidden">
+  <div class="admin-modal">
+    <div class="admin-modal-header">
+      <span id="userRoleModalTitle">分配角色</span>
+      <button class="admin-modal-close" onclick="closeUserRoleModal()">✕</button>
+    </div>
+    <div class="admin-modal-body">
+      <input type="hidden" id="userRoleUserId">
+      <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">勾选该用户所属的角色（可多选）：</div>
+      <div id="userRoleCheckboxList" class="admin-checkbox-list"></div>
+    </div>
+    <div class="admin-modal-footer">
+      <button class="pc-btn" onclick="closeUserRoleModal()">取消</button>
+      <button class="pc-btn pc-btn-primary" onclick="saveUserRoles()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 角色新增/编辑弹窗 ===== -->
+<div id="roleEditModal" class="admin-modal-overlay hidden">
+  <div class="admin-modal">
+    <div class="admin-modal-header">
+      <span id="roleEditModalTitle">新增角色</span>
+      <button class="admin-modal-close" onclick="closeRoleModal()">✕</button>
+    </div>
+    <div class="admin-modal-body">
+      <input type="hidden" id="roleEditId">
+      <div class="admin-form-row">
+        <label>角色名称 <span style="color:red">*</span></label>
+        <input type="text" id="roleEditName" placeholder="如：班主任、教研组长" maxlength="30">
+      </div>
+      <div class="admin-form-row">
+        <label>角色标识 <span style="color:red">*</span>（大写字母和下划线）</label>
+        <input type="text" id="roleEditCode" placeholder="如：TEACHER、HEAD_TEACHER" maxlength="30" id="roleEditCodeInput">
+      </div>
+      <div class="admin-form-row">
+        <label>描述</label>
+        <input type="text" id="roleEditDesc" placeholder="角色用途说明" maxlength="200">
+      </div>
+      <div class="admin-form-row">
+        <label>排序号</label>
+        <input type="number" id="roleEditSort" value="0" min="0">
+      </div>
+      <div class="admin-form-row">
+        <label>状态</label>
+        <select id="roleEditStatus">
+          <option value="1">启用</option>
+          <option value="0">禁用</option>
+        </select>
+      </div>
+    </div>
+    <div class="admin-modal-footer">
+      <button class="pc-btn" onclick="closeRoleModal()">取消</button>
+      <button class="pc-btn pc-btn-primary" onclick="saveRole()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 角色配置菜单弹窗 ===== -->
+<div id="roleMenuModal" class="admin-modal-overlay hidden">
+  <div class="admin-modal">
+    <div class="admin-modal-header">
+      <span id="roleMenuModalTitle">配置菜单权限</span>
+      <button class="admin-modal-close" onclick="closeRoleMenuModal()">✕</button>
+    </div>
+    <div class="admin-modal-body">
+      <input type="hidden" id="roleMenuRoleId">
+      <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">勾选该角色可访问的菜单：</div>
+      <div id="roleMenuCheckboxList" class="admin-checkbox-list"></div>
+    </div>
+    <div class="admin-modal-footer">
+      <button class="pc-btn" onclick="closeRoleMenuModal()">取消</button>
+      <button class="pc-btn pc-btn-primary" onclick="saveRoleMenus()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 菜单新增/编辑弹窗 ===== -->
+<div id="menuEditModal" class="admin-modal-overlay hidden">
+  <div class="admin-modal">
+    <div class="admin-modal-header">
+      <span id="menuEditModalTitle">编辑菜单</span>
+      <button class="admin-modal-close" onclick="closeMenuModal()">✕</button>
+    </div>
+    <div class="admin-modal-body">
+      <input type="hidden" id="menuEditId">
+      <input type="hidden" id="menuEditType" value="0">
+      <div class="admin-form-row" id="menuParentRow">
+        <label>所属父菜单</label>
+        <select id="menuEditParent" style="width:100%;padding:8px;border:1px solid var(--border,#e2e8f0);border-radius:8px;font-size:13px;">
+          <option value="0">（无，作为一级菜单）</option>
+        </select>
+      </div>
+      <div class="admin-form-row">
+        <label>名称 <span style="color:red">*</span></label>
+        <input type="text" id="menuEditName" placeholder="如：学习首页" maxlength="30">
+      </div>
+      <div class="admin-form-row">
+        <label>图标（emoji）</label>
+        <input type="text" id="menuEditIcon" placeholder="📚" maxlength="20">
+      </div>
+      <div class="admin-form-row" id="menuUrlRow">
+        <label>页面路径 <span style="color:red">*</span></label>
+        <input type="text" id="menuEditUrl" placeholder="/pc/index.html" maxlength="100">
+      </div>
+      <div class="admin-form-row" id="menuPermKeyRow" style="display:none;">
+        <label>权限标识 <span style="color:red">*</span></label>
+        <input type="text" id="menuEditPermKey" placeholder="如 question:add" maxlength="60">
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">格式：模块:操作，如 subject:add / question:delete</div>
+      </div>
+      <div class="admin-form-row">
+        <label>排序号</label>
+        <input type="number" id="menuEditSort" value="0" min="0">
+      </div>
+      <div class="admin-form-row">
+        <label>状态</label>
+        <select id="menuEditEnabled">
+          <option value="1">启用</option>
+          <option value="0">禁用</option>
+        </select>
+      </div>
+    </div>
+    <div class="admin-modal-footer">
+      <button class="pc-btn" onclick="closeMenuModal()">取消</button>
+      <button class="pc-btn pc-btn-primary" onclick="saveMenu()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-admin.js"></script>
+<script>initPCCommon('admin');</script>
+</body>
+</html>

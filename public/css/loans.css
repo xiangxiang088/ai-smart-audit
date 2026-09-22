@@ -1,0 +1,358 @@
+/* ===== 借贷中心 ===== */
+
+/* 借出/借入切换 */
+#loanModal .type-tabs {
+  grid-template-columns: 1fr 1fr;
+}
+.type-tab.active.lend { background: var(--warning); color: white; border-color: var(--warning); }
+.type-tab.active.borrow { background: var(--primary); color: white; border-color: var(--primary); }
+.loan-summary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.loan-summary-item { text-align: center; }
+.loan-summary-label { font-size: 0.8125rem; opacity: 0.8; }
+.loan-summary-value { font-size: 22px; font-weight: 700; margin-top: 4px; }
+
+.loan-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.loan-tab {
+  flex: 1;
+  padding: 8px;
+  text-align: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+}
+.loan-tab.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+.loan-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+  border-left: 4px solid transparent;
+}
+.loan-card.loan-overdue {
+  border-left-color: #ef4444;
+  background: linear-gradient(90deg, rgba(239,68,68,0.06) 0%, var(--card) 40%);
+}
+.loan-card.loan-due-soon {
+  border-left-color: #f59e0b;
+  background: linear-gradient(90deg, rgba(245,158,11,0.06) 0%, var(--card) 40%);
+}
+.loan-due-badge {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.loan-due-badge.overdue {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+.loan-due-badge.soon {
+  background: #fffbeb;
+  color: #d97706;
+  border: 1px solid #fde68a;
+}
+.loan-date.due-overdue { color: #dc2626; font-weight: 500; }
+.loan-date.due-soon { color: #d97706; font-weight: 500; }
+.loan-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.loan-contact { font-weight: 600; font-size: 15px; }
+.loan-status {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.loan-status.lend { background: #fef3c7; color: #92400e; }
+.loan-status.borrow { background: #dbeafe; color: #1e40af; }
+.loan-status.settled { background: var(--success); color: white; }
+.loan-amount-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.loan-progress {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.loan-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--primary);
+}
+.loan-date { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; }
+.loan-repay-btn {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+/* 贷款卡片底部 */
+.loan-card {
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.loan-card:active {
+  transform: scale(0.98);
+}
+.loan-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.loan-records-count {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.loan-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.loan-detail-hint {
+  font-size: 0.75rem;
+  color: var(--primary);
+}
+.loan-card-footer .loan-repay-btn {
+  margin-top: 0;
+}
+
+/* 借贷详情弹窗 */
+.loan-detail-summary {
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  text-align: center;
+  color: white;
+}
+.loan-detail-summary.lend {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+.loan-detail-summary.borrow {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.loan-detail-summary.settled {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+.loan-detail-type {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.loan-detail-type-badge {
+  font-size: 0.75rem;
+  padding: 2px 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.25);
+}
+.loan-detail-settled {
+  font-size: 0.75rem;
+  padding: 2px 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.25);
+}
+.loan-detail-contact {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin-bottom: 4px;
+}
+.loan-detail-amount {
+  font-size: 28px;
+  font-weight: 700;
+}
+.loan-detail-progress-wrap {
+  margin-top: 12px;
+}
+.loan-detail-progress {
+  height: 6px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.loan-detail-progress-fill {
+  height: 100%;
+  background: rgba(255,255,255,0.8);
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+.loan-detail-progress-text {
+  font-size: 0.75rem;
+  opacity: 0.85;
+  margin-top: 6px;
+}
+
+.loan-detail-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.loan-detail-meta-item {
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+.loan-detail-meta-item.full {
+  grid-column: 1 / -1;
+}
+.meta-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+.meta-value {
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+.meta-value em { font-style: normal; font-size: 0.75rem; margin-left: 6px; }
+.loan-detail-meta-item.meta-due-overdue { background: #fef2f2; border: 1px solid #fecaca; }
+.loan-detail-meta-item.meta-due-overdue .meta-value { color: #dc2626; }
+.loan-detail-meta-item.meta-due-overdue .meta-value em { color: #dc2626; font-weight: 600; }
+.loan-detail-meta-item.meta-due-soon { background: #fffbeb; border: 1px solid #fde68a; }
+.loan-detail-meta-item.meta-due-soon .meta-value { color: #d97706; }
+.loan-detail-meta-item.meta-due-soon .meta-value em { color: #d97706; font-weight: 600; }
+
+/* 还款时间线 */
+.repay-timeline-section {
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+.repay-timeline-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+.repay-timeline {
+  position: relative;
+  padding-left: 20px;
+}
+.repay-timeline::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  background: var(--border);
+}
+.repay-timeline-item {
+  position: relative;
+  padding-bottom: 16px;
+}
+.repay-timeline-item:last-child {
+  padding-bottom: 0;
+}
+.repay-timeline-dot {
+  position: absolute;
+  left: -19px;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--success);
+  border: 2px solid var(--card);
+  box-shadow: 0 0 0 2px var(--success);
+}
+.repay-timeline-content {
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+.repay-timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.repay-timeline-amount {
+  font-weight: 600;
+  color: var(--success);
+  font-size: 0.9375rem;
+}
+.repay-timeline-date {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.repay-timeline-note {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+.repay-timeline-balance {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.repay-empty {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+/* 图片上传区域 */
+.loan-img-upload {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  transition: border-color 0.15s;
+}
+.loan-img-upload:active {
+  border-color: var(--primary);
+}
+
+/* 详情页凭证图片 */
+.loan-proof-img {
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+  margin-top: 6px;
+  cursor: pointer;
+}
+
+/* 详情页编辑按钮 */
+.loan-edit-btn {
+  font-size: 0.875rem;
+  color: var(--primary);
+  padding: 4px 8px;
+}

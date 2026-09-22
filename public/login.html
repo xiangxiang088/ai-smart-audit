@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>登录 - AI智能记账</title>
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/login.css">
+</head>
+<body class="auth-page-body">
+
+<div class="auth-page" id="authPage">
+  <div class="auth-card">
+    <div class="auth-logo">💰</div>
+    <div class="auth-title">AI智能记账</div>
+    <div class="auth-subtitle">轻松记录每一笔收支</div>
+    <div class="auth-platform-tag auth-platform-mobile">
+      <span class="auth-platform-icon">📱</span>
+      <span class="auth-platform-name">移动端</span>
+      <span class="auth-platform-desc">适配手机 · 随时随地快速记账</span>
+    </div>
+    <form class="auth-form" id="authForm">
+      <div class="auth-input-group">
+        <input type="text" id="authUsername" placeholder="用户名" required>
+      </div>
+      <div class="auth-input-group">
+        <input type="password" id="authPassword" placeholder="密码" required>
+      </div>
+      <div class="auth-input-group" id="nicknameGroup" style="display:none;">
+        <input type="text" id="authNickname" placeholder="昵称">
+      </div>
+      <button type="submit" class="auth-submit" id="authSubmit">登录</button>
+    </form>
+    <div class="auth-switch">
+      <span id="authSwitchText">没有账号？</span>
+      <a href="#" id="authSwitchLink">立即注册</a>
+    </div>
+    <div class="auth-pc-link">
+      <a href="#" onclick="switchToPCLogin(event)">💻 切换到PC版</a>
+    </div>
+  </div>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+// 如果用户偏好 PC 版，或宽屏且未明确选择移动端，跳转到 PC 登录页
+(function() {
+  const pref = localStorage.getItem('preferredLayout');
+  if (pref === 'pc') {
+    window.location.href = '/pc/login.html';
+  } else if (!pref && window.innerWidth >= 900) {
+    window.location.href = '/pc/login.html';
+  }
+})();
+
+// 如果已登录，直接跳转首页
+redirectIfLoggedIn();
+
+let isLogin = true;
+
+function switchToPCLogin(e) {
+  e.preventDefault();
+  localStorage.setItem('preferredLayout', 'pc');
+  window.location.href = '/pc/login.html';
+}
+
+document.getElementById('authSwitchLink').addEventListener('click', (e) => {
+  e.preventDefault();
+  isLogin = !isLogin;
+  document.getElementById('nicknameGroup').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('authSubmit').textContent = isLogin ? '登录' : '注册';
+  document.getElementById('authSwitchText').textContent = isLogin ? '没有账号？' : '已有账号？';
+  document.getElementById('authSwitchLink').textContent = isLogin ? '立即注册' : '立即登录';
+});
+
+document.getElementById('authForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const username = document.getElementById('authUsername').value;
+  const password = document.getElementById('authPassword').value;
+
+  try {
+    if (isLogin) {
+      const data = await request('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ username, password })
+      });
+      state.token = data.token;
+      state.user = data.user;
+      state.currentBook = data.user.book_id || '1';  // 雪花ID为字符串
+      localStorage.setItem('ledger_token', data.token);
+      localStorage.setItem('ledger_user', JSON.stringify(data.user));
+      localStorage.setItem('ledger_book', state.currentBook);
+      localStorage.setItem('preferredLayout', 'mobile');
+      showToast('登录成功');
+    } else {
+      const nickname = document.getElementById('authNickname').value || username;
+      const data = await request('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({ username, password, nickname })
+      });
+      state.token = data.token;
+      state.user = data.user;
+      state.currentBook = data.user.book_id || '1';  // 雪花ID为字符串
+      localStorage.setItem('ledger_token', data.token);
+      localStorage.setItem('ledger_user', JSON.stringify(data.user));
+      localStorage.setItem('ledger_book', state.currentBook);
+      localStorage.setItem('preferredLayout', 'mobile');
+      showToast('注册成功，已为你创建默认账本和账户');
+    }
+    setTimeout(() => {
+      window.location.href = '/index.html';
+    }, 800);
+  } catch (e) {}
+});
+</script>
+</body>
+</html>

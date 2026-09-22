@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登录 - 工程审计智能审读</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-login.css">
+</head>
+<body class="pc-auth-body">
+
+<div class="pc-auth-wrapper">
+  <!-- 左侧品牌区 -->
+  <div class="pc-auth-brand">
+    <div class="pc-auth-brand-content">
+      <div class="pc-auth-logo">🔍</div>
+      <h1 class="pc-auth-title">工程审计智能审读</h1>
+      <p class="pc-auth-slogan">工程资料智能解析，审计疑点自动溯源</p>
+      <ul class="pc-auth-features">
+        <li><span>📄</span> 资料智能解析，PDF/图片要素结构化抽取</li>
+        <li><span>✅</span> 清单↔结算跨页表自动勾稽，三方签章核对</li>
+        <li><span>💬</span> 证据溯源智能问答，每条结论可定位原件页码</li>
+        <li><span>⚠️</span> 疑点台账自动汇总，Excel/Word 一键导出</li>
+      </ul>
+    </div>
+    <div class="pc-auth-brand-footer">© 2026 工程审计智能审读</div>
+  </div>
+
+  <!-- 右侧表单区 -->
+  <div class="pc-auth-form-panel">
+    <div class="pc-auth-card">
+      <div class="pc-auth-card-header">
+        <h2 id="authCardTitle">欢迎回来</h2>
+        <p id="authCardSubtitle">登录你的账户开始审计</p>
+        <div class="pc-auth-platform-tag">
+          <span class="pc-auth-platform-icon">💻</span>
+          <span class="pc-auth-platform-name">PC端</span>
+          <span class="pc-auth-platform-desc">大屏体验 · 多窗口高效管理</span>
+        </div>
+      </div>
+
+      <form class="pc-auth-form" id="authForm">
+        <div class="pc-auth-field">
+          <label for="authUsername">用户名</label>
+          <input type="text" id="authUsername" placeholder="请输入用户名" required autocomplete="username">
+        </div>
+        <div class="pc-auth-field">
+          <label for="authPassword">密码</label>
+          <input type="password" id="authPassword" placeholder="请输入密码" required autocomplete="current-password">
+        </div>
+        <div class="pc-auth-field" id="nicknameGroup" style="display:none;">
+          <label for="authNickname">昵称</label>
+          <input type="text" id="authNickname" placeholder="请输入昵称（选填）">
+        </div>
+        <button type="submit" class="pc-auth-submit" id="authSubmit">登 录</button>
+      </form>
+
+      <div class="pc-auth-switch">
+        <span id="authSwitchText">还没有账号？</span>
+        <a href="#" id="authSwitchLink">立即注册</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script>
+// 如果已登录，直接跳转 PC 首页
+(function() {
+  if (state.token && state.user) {
+    window.location.href = '/pc/index.html';
+  }
+})();
+
+let isLogin = true;
+
+document.getElementById('authSwitchLink').addEventListener('click', (e) => {
+  e.preventDefault();
+  isLogin = !isLogin;
+  document.getElementById('nicknameGroup').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('authSubmit').textContent = isLogin ? '登 录' : '注 册';
+  document.getElementById('authSwitchText').textContent = isLogin ? '还没有账号？' : '已有账号？';
+  document.getElementById('authSwitchLink').textContent = isLogin ? '立即注册' : '立即登录';
+  document.getElementById('authCardTitle').textContent = isLogin ? '欢迎回来' : '创建账号';
+  document.getElementById('authCardSubtitle').textContent = isLogin ? '登录你的账户开始审计' : '创建账号开始智能审计';
+});
+
+document.getElementById('authForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const username = document.getElementById('authUsername').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const submitBtn = document.getElementById('authSubmit');
+
+  if (!username || !password) {
+    showToast('请填写用户名和密码');
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = isLogin ? '登录中...' : '注册中...';
+
+  try {
+    if (isLogin) {
+      const data = await request('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ username, password })
+      });
+      state.token = data.token;
+      state.user = data.user;
+      localStorage.setItem('ledger_token', data.token);
+      localStorage.setItem('ledger_user', JSON.stringify(data.user));
+      localStorage.setItem('isAdmin', data.is_admin ? 'true' : 'false');
+      localStorage.setItem('preferredLayout', 'pc');
+      showToast('登录成功');
+    } else {
+      const nickname = document.getElementById('authNickname').value.trim() || username;
+      const data = await request('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({ username, password, nickname })
+      });
+      state.token = data.token;
+      state.user = data.user;
+      localStorage.setItem('ledger_token', data.token);
+      localStorage.setItem('ledger_user', JSON.stringify(data.user));
+      localStorage.setItem('isAdmin', data.is_admin ? 'true' : 'false');
+      localStorage.setItem('preferredLayout', 'pc');
+      showToast('注册成功，欢迎使用工程审计智能审读');
+    }
+    setTimeout(() => {
+      window.location.href = '/pc/index.html';
+    }, 600);
+  } catch (err) {
+    submitBtn.disabled = false;
+    submitBtn.textContent = isLogin ? '登 录' : '注 册';
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,572 @@
+/* ============================================================
+ * pc-assessment.css - 智能评测页面专用样式
+ * ============================================================ */
+
+/* ===== 学科选择网格 ===== */
+.edu-subject-select-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.edu-subject-select-item {
+  border: 2px solid var(--border, #e5e7eb);
+  border-radius: var(--radius, 12px);
+  padding: 20px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--card, #fff);
+}
+.edu-subject-select-item:hover {
+  border-color: var(--primary, #3b82f6);
+  box-shadow: 0 4px 12px rgba(59,130,246,0.15);
+  transform: translateY(-2px);
+}
+.edu-subject-select-item.selected {
+  border-color: var(--primary, #3b82f6);
+  background: rgba(59,130,246,0.06);
+  box-shadow: 0 4px 12px rgba(59,130,246,0.20);
+}
+
+/* ===== 评测进行区 ===== */
+.assessment-container {
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+/* 左侧答题卡 + 右侧主区域 布局 */
+.assessment-layout {
+  max-width: 980px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.assessment-main {
+  flex: 1;
+  min-width: 0;
+}
+@media (max-width: 900px) {
+  .assessment-layout {
+    flex-direction: column;
+  }
+}
+
+/* 题目卡片内的收藏星标按钮 */
+.fav-star-btn {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 1.5px solid var(--border, #e5e7eb);
+  background: var(--bg-secondary, #f8fafc);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 5px 12px;
+  border-radius: 20px;
+  color: var(--text-secondary, #64748b);
+  transition: all 0.15s;
+}
+.fav-star-btn::after {
+  content: '收藏';
+  font-size: 12px;
+  font-weight: 600;
+}
+.fav-star-btn:hover {
+  transform: scale(1.05);
+  border-color: #f59e0b;
+  color: #f59e0b;
+  background: rgba(245,158,11,0.08);
+}
+.fav-star-btn.favorited {
+  color: #f59e0b;
+  border-color: #f59e0b;
+  background: rgba(245,158,11,0.12);
+}
+.fav-star-btn.favorited::after {
+  content: '已收藏';
+}
+.fav-star-btn:disabled {
+  cursor: default;
+  opacity: 0.6;
+  transform: none;
+}
+
+/* 进度条 */
+.assessment-progress-bar {
+  margin-bottom: 16px;
+}
+.assessment-progress-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+.assessment-progress-track {
+  height: 8px;
+  background: var(--border, #e5e7eb);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.assessment-progress-fill {
+  height: 100%;
+  background: var(--primary, #3b82f6);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+/* 计时器 */
+.assessment-timer {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  background: var(--bg-secondary, #f1f5f9);
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+/* 题目卡片 */
+.assessment-question-card {
+  min-height: 400px;
+}
+.assessment-question-meta {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.assessment-question-text {
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--text-primary, #1e293b);
+  margin-bottom: 24px;
+  white-space: pre-wrap;
+}
+
+/* 难度徽章颜色 */
+.difficulty-1 { background: rgba(16,185,129,0.1) !important; color: #10b981 !important; }
+.difficulty-2 { background: rgba(59,130,246,0.1) !important; color: #3b82f6 !important; }
+.difficulty-3 { background: rgba(245,158,11,0.1) !important; color: #f59e0b !important; }
+.difficulty-4 { background: rgba(239,68,68,0.1) !important; color: #ef4444 !important; }
+.difficulty-5 { background: rgba(139,92,246,0.1) !important; color: #8b5cf6 !important; }
+
+/* ===== 选项样式 ===== */
+.assessment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.assessment-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 2px solid var(--border, #e5e7eb);
+  border-radius: var(--radius-sm, 8px);
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--card, #fff);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.assessment-option:hover {
+  border-color: var(--primary, #3b82f6);
+  background: rgba(59,130,246,0.04);
+}
+.assessment-option.selected {
+  border-color: var(--primary, #3b82f6);
+  background: rgba(59,130,246,0.08);
+}
+.assessment-option.correct {
+  border-color: #10b981;
+  background: rgba(16,185,129,0.08);
+}
+.assessment-option.wrong {
+  border-color: #ef4444;
+  background: rgba(239,68,68,0.06);
+}
+.option-key {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg-secondary, #f1f5f9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.assessment-option.selected .option-key {
+  background: var(--primary, #3b82f6);
+  color: #fff;
+}
+.assessment-option.correct .option-key {
+  background: #10b981;
+  color: #fff;
+}
+.assessment-option.wrong .option-key {
+  background: #ef4444;
+  color: #fff;
+}
+
+/* ===== 解析区 ===== */
+.assessment-analysis {
+  margin-top: 20px;
+  padding: 16px;
+  background: var(--bg-secondary, #f8fafc);
+  border-radius: var(--radius-sm, 8px);
+  border-left: 4px solid var(--primary, #3b82f6);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* ===== 操作按钮区 ===== */
+.assessment-action-area {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border, #e5e7eb);
+  flex-wrap: wrap;
+}
+
+/* ===== 结果页样式 ===== */
+.assessment-result-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border, #e5e7eb);
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.assessment-result-icon {
+  font-size: 56px;
+  line-height: 1;
+}
+.assessment-result-score {
+  text-align: center;
+}
+.assessment-score-num {
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.assessment-result-stats {
+  display: flex;
+  gap: 24px;
+  margin-left: auto;
+}
+.assessment-result-stat-item {
+  text-align: center;
+}
+
+.assessment-ai-summary {
+  background: linear-gradient(135deg, rgba(102,126,234,0.06), rgba(118,75,162,0.06));
+  border: 1px solid rgba(102,126,234,0.2);
+  border-radius: var(--radius-sm, 8px);
+  padding: 14px 16px;
+  margin: 16px 0;
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 900px) {
+  .assessment-result-stats { flex-direction: column; gap: 8px; }
+  .assessment-result-header { flex-direction: column; text-align: center; }
+  .assessment-result-stats { margin-left: 0; }
+}
+
+/* ===== 学段 Tabs ===== */
+.edu-level-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.edu-level-tab {
+  padding: 6px 16px;
+  border: 1.5px solid var(--border, #e5e7eb);
+  border-radius: 20px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.15s;
+  color: var(--text-secondary, #64748b);
+}
+.edu-level-tab:hover {
+  border-color: var(--primary, #3b82f6);
+  color: var(--primary, #3b82f6);
+}
+.edu-level-tab.active {
+  background: var(--primary, #3b82f6);
+  color: #fff;
+  border-color: var(--primary, #3b82f6);
+}
+
+/* ===== 学科封面卡片 ===== */
+.edu-subject-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+.edu-subject-card {
+  border: 2px solid var(--border, #e5e7eb);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  background: var(--card, #fff);
+}
+.edu-subject-card:hover {
+  border-color: var(--primary, #3b82f6);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+.edu-subject-card.selected {
+  border-color: var(--primary, #3b82f6);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+.edu-subject-cover {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  display: block;
+}
+.edu-subject-cover-emoji {
+  width: 100%;
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 52px;
+  background: var(--bg-secondary, #f8fafc);
+}
+.edu-subject-card-name {
+  padding: 8px 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+}
+
+/* ===== 答题卡 ===== */
+.assessment-answer-card {
+  background: var(--card, #fff);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: var(--radius-sm, 8px);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+/* 左侧栏形态：assessment-layout 内的答题卡固定宽度，随内容滚动，题目多时不撑高整页 */
+.assessment-layout .assessment-answer-card {
+  width: 220px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 32px);
+  display: flex;
+  flex-direction: column;
+}
+.assessment-layout .assessment-answer-card-body {
+  overflow-y: auto;
+}
+/* 收起态：变为窄图标条，答题卡网格始终可用（不整体隐藏），符合常规考试系统"答题卡常驻"的习惯 */
+.assessment-layout .assessment-answer-card.collapsed {
+  width: 52px;
+}
+.assessment-layout .assessment-answer-card.collapsed .assessment-answer-card-header span:first-child {
+  display: none;
+}
+.assessment-layout .assessment-answer-card.collapsed .assessment-answer-card-header {
+  justify-content: center;
+  padding: 10px 6px;
+}
+.assessment-layout .assessment-answer-card.collapsed .assessment-answer-card-body {
+  padding: 4px 6px 12px;
+  justify-content: center;
+}
+.assessment-layout .assessment-answer-card.collapsed .assessment-card-item {
+  width: 32px;
+  height: 32px;
+}
+@media (max-width: 900px) {
+  .assessment-layout .assessment-answer-card {
+    width: auto;
+    position: static;
+    max-height: none;
+  }
+  .assessment-layout .assessment-answer-card.collapsed {
+    width: auto;
+  }
+  .assessment-layout .assessment-answer-card.collapsed .assessment-answer-card-header span:first-child {
+    display: inline;
+  }
+}
+.assessment-answer-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  user-select: none;
+}
+.assessment-answer-card-header:hover {
+  background: var(--bg-secondary, #f8fafc);
+}
+#answerCardToggleIcon {
+  transition: transform 0.2s;
+}
+.assessment-answer-card.collapsed #answerCardToggleIcon {
+  transform: rotate(-90deg);
+}
+.assessment-answer-card-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 4px 16px 16px;
+}
+.assessment-card-item {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border, #e5e7eb);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted, #94a3b8);
+  background: var(--bg-secondary, #f8fafc);
+  flex-shrink: 0;
+  cursor: default;
+}
+.assessment-card-item.answered {
+  border-color: #10b981;
+  background: rgba(16,185,129,0.1);
+  color: #10b981;
+  cursor: pointer;
+}
+.assessment-card-item.current {
+  border-color: var(--primary, #3b82f6);
+  background: var(--primary, #3b82f6);
+  color: #fff;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+  cursor: pointer;
+}
+.assessment-card-item.unseen {
+  border-style: dashed;
+  opacity: 0.5;
+}
+
+/* ===== 结果页逐题回顾 ===== */
+.answer-detail-card {
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: var(--radius-sm, 8px);
+  padding: 16px;
+  margin-bottom: 14px;
+  position: relative;
+}
+.answer-detail-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.answer-detail-index {
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+}
+.answer-detail-result-badge {
+  font-size: 12px;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.answer-detail-result-badge.correct {
+  background: rgba(16,185,129,0.1);
+  color: #10b981;
+}
+.answer-detail-result-badge.wrong {
+  background: rgba(239,68,68,0.1);
+  color: #ef4444;
+}
+.answer-detail-fav-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+  color: var(--text-muted, #94a3b8);
+  transition: transform 0.15s;
+}
+.answer-detail-fav-btn:hover {
+  transform: scale(1.15);
+}
+.answer-detail-fav-btn.favorited {
+  color: #f59e0b;
+}
+.answer-detail-text {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-primary, #1e293b);
+  margin-bottom: 10px;
+  white-space: pre-wrap;
+}
+.answer-detail-row {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-secondary, #64748b);
+}
+.answer-detail-row b {
+  color: var(--text-primary, #1e293b);
+}
+.answer-detail-row.wrong-text { color: #ef4444; }
+.answer-detail-row.correct-text { color: #10b981; }
+
+/* ===== 收藏分类选择弹窗 ===== */
+.fav-category-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border, #e5e7eb);
+  border-radius: var(--radius-sm, 8px);
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-primary, #1e293b);
+  transition: all 0.15s;
+}
+.fav-category-item:hover {
+  border-color: #f59e0b;
+  background: rgba(245,158,11,0.06);
+}
+
+/* AI分析 loading spinner */
+.assess-spin {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: assessSpin 0.7s linear infinite;
+}
+@keyframes assessSpin {
+  to { transform: rotate(360deg); }
+}

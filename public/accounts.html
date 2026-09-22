@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>账户 - AI智能记账</title>
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/accounts.css">
+</head>
+<body>
+
+<div class="app-container">
+  <div class="top-bar">
+    <span class="top-bar-title">我的账户</span>
+    <button class="top-bar-add-btn" id="addAccountBtn">+ 新增</button>
+  </div>
+  <div class="page-content">
+    <div class="total-assets-card">
+      <div class="total-assets-label">净资产</div>
+      <div class="total-assets-value" id="netAssets">¥0.00</div>
+      <div class="total-assets-row">
+        <div>
+          <div class="assets-item-label">总资产</div>
+          <div class="assets-item-value" id="totalAssets">¥0.00</div>
+        </div>
+        <div>
+          <div class="assets-item-label">总负债</div>
+          <div class="assets-item-value" id="totalLiabilities">¥0.00</div>
+        </div>
+      </div>
+    </div>
+    <div id="accountsList"></div>
+  </div>
+</div>
+
+<!-- 新增/编辑账户弹窗 -->
+<div class="modal" id="accountModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="closeAccountModal()">✕</button>
+      <span class="modal-title" id="accModalTitle">新增账户</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">账户名称</label>
+        <input type="text" id="accName" placeholder="如：招商银行、零花钱">
+      </div>
+      <div class="form-group">
+        <label class="form-label">账户类型</label>
+        <select id="accType">
+          <option value="cash">💵 现金</option>
+          <option value="wechat">💬 微信</option>
+          <option value="alipay">💰 支付宝</option>
+          <option value="bank">💳 银行卡</option>
+          <option value="credit">💳 信用卡</option>
+          <option value="invest">📈 投资理财</option>
+          <option value="other">📂 其他</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">图标</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;" id="accIconPicker"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" id="accBalanceLabel">初始余额</label>
+        <input type="number" id="accBalance" placeholder="0.00" step="0.01" value="0">
+      </div>
+      <div class="form-group" id="accCreditDates" style="display:none;">
+        <label class="form-label">信用卡还款日</label>
+        <div style="display:flex;gap:8px;">
+          <input type="number" id="accBillDay" min="1" max="31" placeholder="账单日(1-31)" style="flex:1;">
+          <input type="number" id="accRepayDay" min="1" max="31" placeholder="还款日(1-31)" style="flex:1;">
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">设置后还款日前3天会显示提醒</div>
+      </div>
+      <button class="btn-primary" onclick="saveAccount()" id="accSaveBtn">保存</button>
+      <button class="btn-danger" id="accDeleteBtn" onclick="deleteAccount()" style="display:none;margin-top:8px;">删除账户</button>
+    </div>
+  </div>
+</div>
+
+<!-- 余额调整弹窗 -->
+<div class="modal" id="balanceModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('balanceModal').classList.remove('show')">✕</button>
+      <span class="modal-title">调整余额</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="font-size:0.875rem;color:var(--text-muted);margin-bottom:4px;" id="balAccName"></div>
+        <div style="font-size:0.8125rem;color:var(--text-muted);">当前余额：<span id="balCurrent">¥0.00</span></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">调整为</label>
+        <input type="number" id="balNewValue" placeholder="0.00" step="0.01" style="font-size:1.25rem;text-align:center;font-weight:700;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">备注（选填）</label>
+        <input type="text" id="balNote" placeholder="如：对账差额调整">
+      </div>
+      <button class="btn-primary" onclick="saveBalance()">确认调整</button>
+    </div>
+  </div>
+</div>
+
+<!-- 账户流水弹窗 -->
+<div class="modal" id="txModal">
+  <div class="modal-content tx-modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('txModal').classList.remove('show')">✕</button>
+      <span class="modal-title" id="txModalTitle">流水明细</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="tx-filter-bar">
+      <div class="tx-filter-row">
+        <input type="date" id="txStartDate" class="tx-date-input">
+        <span class="tx-filter-sep">至</span>
+        <input type="date" id="txEndDate" class="tx-date-input">
+        <button class="tx-filter-btn" id="txFilterBtn">筛选</button>
+        <button class="tx-reset-btn" id="txResetBtn">重置</button>
+      </div>
+    </div>
+    <div class="tx-list" id="txList"></div>
+  </div>
+</div>
+
+<script src="js/common.js"></script>
+<script src="js/accounts.js"></script>
+<script>
+initCommon('accounts');
+</script>
+</body>
+</html>

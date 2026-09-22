@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>账户管理 - 智能记账 PC版</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-accounts.css">
+<link rel="stylesheet" href="/pc/css/pc-addrecord.css">
+</head>
+<body>
+<div class="pc-wrapper">
+  <aside class="pc-sidebar" id="pcSidebar"></aside>
+  <div class="pc-main">
+    <header class="pc-topbar" id="pcTopbar"></header>
+    <main class="pc-content">
+      <!-- 汇总 -->
+      <div class="pc-stat-grid" id="accSummary" style="margin-bottom:16px;grid-template-columns:repeat(3,1fr);"></div>
+
+      <!-- 账户卡片网格 -->
+      <div class="pc-card">
+        <div class="pc-card-title">
+          💳 我的账户
+          <button id="addAccountBtn" style="margin-left:auto;" class="pc-topbar-btn primary">+ 新增账户</button>
+        </div>
+        <div class="pc-account-grid" id="accountList"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- 账户新增/编辑弹窗（复用 accounts.js 的 openAccountModal） -->
+<div class="modal" id="accountModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="closeAccountModal()">✕</button>
+      <span class="modal-title" id="accModalTitle">新增账户</span>
+      <button class="modal-close" id="accDeleteBtn" onclick="deleteAccount()" style="color:var(--danger);display:none;">删除</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">账户名称</label>
+        <input type="text" id="accName" class="amount-input" placeholder="如：招商银行" style="width:100%;font-size:15px;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">账户类型</label>
+        <select id="accType" class="pc-filter-input" style="font-size:14px;padding:10px;">
+          <option value="cash">现金</option>
+          <option value="wechat">微信</option>
+          <option value="alipay">支付宝</option>
+          <option value="bank">银行卡</option>
+          <option value="credit">信用卡</option>
+          <option value="invest">投资理财</option>
+          <option value="other">其他</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" id="accBalanceLabel">初始余额</label>
+        <input type="number" id="accBalance" class="amount-input" placeholder="0.00" step="0.01" style="width:100%;font-size:15px;">
+      </div>
+      <div class="form-group" id="accCreditDates" style="display:none;">
+        <label class="form-label">信用卡还款日设置</label>
+        <div style="display:flex;gap:10px;">
+          <div style="flex:1;">
+            <input type="number" id="accBillDay" min="1" max="31" placeholder="账单日(1-31)" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;">
+          </div>
+          <div style="flex:1;">
+            <input type="number" id="accRepayDay" min="1" max="31" placeholder="还款日(1-31)" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;">
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">设置后将在还款日前3天显示提醒</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">图标</label>
+        <div id="accIconPicker" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary btn-save" onclick="saveAccount()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 余额调整弹窗 -->
+<div class="modal" id="balanceModal">
+  <div class="modal-content" style="max-width:420px!important;">
+    <div class="modal-header">
+      <button class="modal-close" onclick="closeBalanceModal()">✕</button>
+      <span class="modal-title">调整余额</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="font-size:16px;font-weight:600;" id="balAccName"></div>
+        <div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">当前余额：<span id="balCurrent" style="color:var(--primary);font-weight:600;"></span></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">新余额</label>
+        <input type="number" id="balNewValue" class="amount-input" placeholder="0.00" step="0.01" style="width:100%;font-size:18px;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">备注（可选）</label>
+        <input type="text" id="balNote" class="amount-input" placeholder="调整原因" style="width:100%;font-size:14px;">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary btn-save" onclick="saveBalance()">确认调整</button>
+    </div>
+  </div>
+</div>
+
+<!-- 流水弹窗 -->
+<div class="modal" id="txModal">
+  <div class="modal-content" style="max-width:680px!important;">
+    <div class="modal-header">
+      <button class="modal-close" onclick="closeTxModal()">✕</button>
+      <span class="modal-title" id="txModalTitle">账户流水</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;">
+        <input type="date" id="txStartDate" class="pc-filter-input" style="flex:1;">
+        <span style="color:var(--text-secondary);font-size:13px;">至</span>
+        <input type="date" id="txEndDate" class="pc-filter-input" style="flex:1;">
+        <button class="pc-filter-btn" id="txFilterBtn" style="width:auto;padding:7px 14px;">查询</button>
+        <button class="pc-filter-btn secondary" id="txResetBtn" style="width:auto;padding:7px 14px;">重置</button>
+      </div>
+      <div id="txList" style="max-height:440px;overflow-y:auto;"></div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-addrecord.js"></script>
+<script src="/pc/js/pc-accounts.js"></script>
+<script>initPCCommon('accounts');</script>
+</body>
+</html>

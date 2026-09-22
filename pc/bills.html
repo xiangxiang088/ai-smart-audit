@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>账单记录 - 智能记账 PC版</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-addrecord.css">
+<link rel="stylesheet" href="/pc/css/pc-diet.css">
+</head>
+<body>
+<div class="pc-wrapper">
+  <aside class="pc-sidebar" id="pcSidebar"></aside>
+  <div class="pc-main">
+    <header class="pc-topbar" id="pcTopbar"></header>
+    <main class="pc-content">
+      <!-- AI 快捷输入 -->
+      <div class="pc-card" style="margin-bottom:16px;">
+        <div class="ai-input-bar" style="margin-bottom:0;">
+          <div class="ai-input-row">
+            <button class="ai-voice-btn" id="aiVoiceBtn" onclick="toggleAiVoice()" title="语音输入">🎤</button>
+            <input type="text" id="aiParseInput" class="ai-parse-input" placeholder="🤖 输入或说：午餐外卖30元" maxlength="100">
+            <button class="ai-parse-btn" id="aiParseBtn" onclick="aiParseText()">解析</button>
+          </div>
+          <div class="ai-parse-result" id="aiParseResult" style="display:none;"></div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:220px 1fr;gap:16px;align-items:start;">
+        <!-- 左侧：筛选面板 + 日历切换 -->
+        <div>
+          <div class="pc-filter-panel">
+            <div class="pc-filter-title">🔍 筛选</div>
+
+            <div class="pc-filter-section">
+              <label class="pc-filter-label">类型</label>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+                <button class="pc-filter-btn secondary active" data-type="all" id="filterAll" onclick="setTypeFilter('all')">全部</button>
+                <button class="pc-filter-btn secondary" data-type="expense" onclick="setTypeFilter('expense')">支出</button>
+                <button class="pc-filter-btn secondary" data-type="income" onclick="setTypeFilter('income')">收入</button>
+                <button class="pc-filter-btn secondary" data-type="transfer" onclick="setTypeFilter('transfer')">转账</button>
+              </div>
+            </div>
+
+            <div class="pc-filter-section">
+              <label class="pc-filter-label">开始日期</label>
+              <input type="date" id="filterStart" class="pc-filter-input">
+            </div>
+            <div class="pc-filter-section">
+              <label class="pc-filter-label">结束日期</label>
+              <input type="date" id="filterEnd" class="pc-filter-input">
+            </div>
+
+            <div class="pc-filter-section">
+              <label class="pc-filter-label">分类</label>
+              <select id="filterCat" class="pc-filter-input">
+                <option value="">全部分类</option>
+              </select>
+            </div>
+
+            <button class="pc-filter-btn" onclick="applyPCFilter()" style="margin-bottom:8px;">应用筛选</button>
+            <button class="pc-filter-btn secondary" onclick="resetPCFilter()">重置</button>
+
+            <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:12px;">
+              <button class="pc-filter-btn secondary" id="viewToggleBtn" onclick="togglePCView()">📅 切换日历视图</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧：账单列表 / 日历视图 -->
+        <div>
+          <!-- 月份导航 -->
+          <div class="pc-card" style="margin-bottom:8px;padding:12px 16px;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <button id="prevMonth" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--card);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">‹</button>
+              <span id="currentMonthLabel" style="font-weight:700;font-size:15px;min-width:90px;text-align:center;"></span>
+              <button id="nextMonth" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--card);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">›</button>
+              <div style="font-size:13px;color:var(--text-secondary);">
+                收入 <span id="monthIncome" style="color:var(--success);font-weight:600;">¥0</span>
+                &nbsp;支出 <span id="monthExpense" style="color:var(--danger);font-weight:600;">¥0</span>
+              </div>
+              <div style="margin-left:auto;display:flex;gap:8px;">
+                <button class="pc-topbar-btn" onclick="openDietAnalysis()" style="border-color:#10b981;color:#059669;background:rgba(16,185,129,0.06);">🥗 饮食顾问</button>
+                <button class="pc-topbar-btn primary" onclick="openAddModal()">✏️ 记一笔</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 日历视图 -->
+          <div class="pc-card" id="calendarView" style="display:none;">
+            <div class="pc-calendar" id="pcCalendar"></div>
+            <div id="calDayDetail" class="pc-cal-detail"></div>
+          </div>
+
+          <!-- 列表视图 -->
+          <div id="listView">
+            <div id="billsList"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-addrecord.js"></script>
+<script src="/pc/js/pc-bills.js"></script>
+<script src="/pc/js/pc-diet.js"></script>
+<script>initPCCommon('bills');</script>
+</body>
+</html>

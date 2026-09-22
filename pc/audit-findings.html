@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>疑点台账 - 工程审计智能审读</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-audit.css">
+<link rel="stylesheet" href="/pc/css/pc-visual-enhance.css">
+</head>
+<body>
+<div class="pc-wrapper">
+  <aside class="pc-sidebar" id="pcSidebar"></aside>
+  <div class="pc-main">
+    <header class="pc-topbar" id="pcTopbar"></header>
+    <main class="pc-content">
+
+      <div id="noProject" style="display:none;">
+        <div class="au-empty"><span class="icon">📁</span>请选择审计项目，或先从「审计项目」进入</div>
+        <div class="pc-card" style="max-width:420px;margin:16px auto;">
+          <div class="pc-card-title">选择审计项目</div>
+          <select class="au-select" id="projectPick" style="width:100%;"></select>
+        </div>
+      </div>
+
+      <div id="projectView" style="display:none;">
+        <div class="au-project-bar">
+          <button class="au-btn sm" onclick="location.href='/pc/audit-project.html'">‹ 返回项目</button>
+          <h2 id="projTitle">疑点台账</h2>
+          <span id="findingMeta" class="au-stat-chip" style="margin-left:8px;"></span>
+          <button class="au-btn sm" id="btnRescan" style="margin-left:auto;">↻ 重新扫描</button>
+          <button class="au-btn sm" id="btnRefresh">刷新</button>
+          <button class="au-btn primary sm" id="btnExportXlsx">⬇ 导出 Excel 台账</button>
+          <button class="au-btn primary sm" id="btnExportWord">⬇ 导出 Word 发现清单</button>
+        </div>
+
+        <div class="pc-card">
+          <div class="pc-card-title">⚠️ 审计疑点清单
+            <span style="font-size:12px;color:#94a3b8;font-weight:400;">由规则扫描（量差异常 / 三无签证 / 凑整金额 / 连号发票 / 集中签证）与核对程序自动汇总，均可溯源到原始文件页码</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap;">
+            <label style="font-size:13px;color:#64748b;">风险等级</label>
+            <select class="au-select sm" id="riskFilter" style="width:120px;">
+              <option value="">全部</option>
+              <option value="high">高</option>
+              <option value="mid">中</option>
+              <option value="low">低</option>
+            </select>
+            <label style="font-size:13px;color:#64748b;">复核状态</label>
+            <select class="au-select sm" id="statusFilter" style="width:120px;">
+              <option value="">全部</option>
+              <option value="open">待核实</option>
+              <option value="confirmed">已核实</option>
+              <option value="misreport">误报</option>
+              <option value="closed">已关闭</option>
+            </select>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="au-table">
+              <thead>
+                <tr><th>序号</th><th>风险</th><th>疑点类型</th><th>疑点描述</th><th>审计建议</th><th>金额(元)</th><th>证据</th><th>复核</th></tr>
+              </thead>
+              <tbody id="findingRows"></tbody>
+            </table>
+          </div>
+          <div id="findingEmpty" class="au-empty" style="display:none;"><span class="icon">✅</span>暂无疑点——可点「重新扫描」生成，或先前往「核对程序」运行核对</div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-audit-findings.js"></script>
+<script>initPCCommon('audit-findings');</script>
+</body>
+</html>

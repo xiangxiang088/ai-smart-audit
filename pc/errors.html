@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>错因分析 - AI智能教育助手</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-education.css">
+</head>
+<body>
+<div class="pc-wrapper">
+  <aside class="pc-sidebar" id="pcSidebar"></aside>
+  <div class="pc-main">
+    <header class="pc-topbar" id="pcTopbar"></header>
+    <main class="pc-content">
+
+      <!-- 错因分布统计 -->
+      <div class="pc-stat-grid" style="margin-bottom:16px;grid-template-columns:repeat(5,1fr);">
+        <div class="pc-stat-item">
+          <div class="pc-stat-label">粗心大意</div>
+          <div class="pc-stat-value" id="countCareless" style="color:#f59e0b">--</div>
+        </div>
+        <div class="pc-stat-item">
+          <div class="pc-stat-label">概念模糊</div>
+          <div class="pc-stat-value" id="countConcept" style="color:#ef4444">--</div>
+        </div>
+        <div class="pc-stat-item">
+          <div class="pc-stat-label">方法缺失</div>
+          <div class="pc-stat-value" id="countMethod" style="color:#8b5cf6">--</div>
+        </div>
+        <div class="pc-stat-item">
+          <div class="pc-stat-label">前置知识缺失</div>
+          <div class="pc-stat-value" id="countPrerequisite" style="color:#ec4899">--</div>
+        </div>
+        <div class="pc-stat-item">
+          <div class="pc-stat-label">合计错误</div>
+          <div class="pc-stat-value" id="countTotal" style="color:var(--text-primary)">--</div>
+        </div>
+      </div>
+
+      <!-- 错因列表 -->
+      <div class="pc-card">
+        <div class="pc-card-title">
+          🔍 错因分析历史
+          <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;">
+            <select id="filterLevel" class="form-select" style="font-size:13px;padding:4px 10px;" onchange="onLevelFilterChange()">
+              <option value="">全部学段</option>
+              <option value="primary">🏫 小学</option>
+              <option value="junior">📚 初中</option>
+              <option value="high">🎓 高中</option>
+              <option value="university">🏛️ 大学</option>
+            </select>
+            <select id="filterSubject" class="form-select" style="font-size:13px;padding:4px 10px;" onchange="loadErrors()">
+              <option value="">全部学科</option>
+            </select>
+            <select id="filterType" class="form-select" style="font-size:13px;padding:4px 10px;" onchange="loadErrors()">
+              <option value="">全部类型</option>
+              <option value="careless">粗心大意</option>
+              <option value="concept">概念模糊</option>
+              <option value="method">方法缺失</option>
+              <option value="prerequisite">前置知识缺失</option>
+              <option value="unknown">原因未知</option>
+            </select>
+          </div>
+        </div>
+        <div id="errorList">
+          <div class="pc-empty"><div class="pc-empty-icon">🔍</div><div class="pc-empty-text">完成评测并进行错因分析后显示</div></div>
+        </div>
+        <div id="errorPagination" style="margin-top:16px;text-align:center;"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-errors.js"></script>
+<script>initPCCommon('errors');</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>模型配置 - 工程审计智能审读</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-audit.css">
+</head>
+<body>
+<div class="pc-wrapper">
+  <aside class="pc-sidebar" id="pcSidebar"></aside>
+  <div class="pc-main">
+    <header class="pc-topbar" id="pcTopbar"></header>
+    <main class="pc-content">
+      <div class="au-cfg-page">
+
+        <!-- 生效顺序预览 -->
+        <div class="pc-card">
+          <div class="pc-card-title">🤖 审计大脑模型配置</div>
+          <p class="au-model-tip">
+            这里是「清标分析 / 智能问答」等审计功能实际调用的模型。调用链会<b>按列表顺序从上往下依次尝试</b>：
+            第一个（主模型）失败才试第二个，以此类推。
+            不想用某个模型，把它<b>关掉</b>或<b>移到后面</b>即可，不会再有「明明不用却每次先等它 5 分钟」的情况。
+            API Key 默认读取服务器环境变量 <code>ARK_API_KEY</code>，无需在此填写。
+          </p>
+          <div class="au-chain-label">当前实际调用顺序</div>
+          <div id="chainPreview" class="au-chain-preview">加载中...</div>
+        </div>
+
+        <!-- 模型链 -->
+        <div class="pc-card">
+          <div class="pc-card-title">
+            模型列表
+            <span class="au-model-tag">列表顺序 = 降级顺序</span>
+          </div>
+          <div id="modelList" class="au-model-list">加载中...</div>
+        </div>
+
+        <!-- 全局策略 -->
+        <div class="pc-card">
+          <div class="pc-card-title">全局策略</div>
+          <div class="au-cfg-global">
+            <label class="au-cfg-global-row">
+              <input type="checkbox" id="failoverToggle">
+              <span><b>启用自动故障切换</b>
+                <span class="hint">（关闭后<b>只调用主模型</b>，一次都不试备用；适合"我就要这个模型，失败也认"的场景）</span>
+              </span>
+            </label>
+            <div class="au-cfg-global-row">
+              <span><b>整链总时间预算</b></span>
+              <input type="number" id="chainTimeoutInput" min="0" step="1" style="width:88px;">
+              <span class="hint">分钟。整条链跑完这个时间还没成功就放弃，防止「单模型超时 × 模型数」一直挂着。填 0 表示不限制。</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 连通性测试 -->
+        <div class="pc-card">
+          <div class="pc-card-title">
+            连通性测试
+            <button class="au-btn" id="btnTest" style="margin-left:auto;">🔌 测试全部模型</button>
+          </div>
+          <div class="au-model-test" id="modelTestResult">
+            <span class="hint" style="font-size:12.5px;color:var(--text-muted,#94a3b8);">
+              逐个模型发一次极简请求，确认 Key / 额度 / 网络是否正常（约 10-30 秒）。
+            </span>
+          </div>
+        </div>
+
+        <!-- 操作栏 -->
+        <div class="au-cfg-actions">
+          <span id="saveHint" class="hint"></span>
+          <button class="au-btn" id="btnReset">↺ 还原</button>
+          <button class="au-btn primary" id="btnSave">💾 保存并生效</button>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-ai-model-config.js"></script>
+<script>initPCCommon('audit-model-config');</script>
+</body>
+</html>

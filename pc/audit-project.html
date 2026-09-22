@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>审计项目 - 工程审计智能审读</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-audit.css">
+<link rel="stylesheet" href="/pc/css/pc-visual-enhance.css">
+</head>
+<body>
+<div class="pc-wrapper">
+  <aside class="pc-sidebar" id="pcSidebar"></aside>
+  <div class="pc-main">
+    <header class="pc-topbar" id="pcTopbar"></header>
+    <main class="pc-content">
+
+      <div class="au-toolbar">
+        <input class="au-input au-search" id="searchInput" placeholder="搜索项目名称 / 编号" style="max-width:320px;">
+        <button class="au-btn" id="btnSearch">🔍 搜索</button>
+        <button class="au-btn" id="btnModelCfg" style="margin-left:auto;">🤖 模型配置</button>
+        <button class="au-btn primary" id="btnNew">＋ 新建审计项目</button>
+      </div>
+
+      <div id="projectGrid" class="au-project-grid">
+        <div class="au-empty"><span class="icon">📁</span>加载中...</div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-audit-project.js"></script>
+<script>initPCCommon('audit-project');</script>
+</body>
+</html>

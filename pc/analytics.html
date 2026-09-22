@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学情分析 - AI智能教育助手</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-education.css">
+<link rel="stylesheet" href="/pc/css/pc-analytics.css">
+</head>
+<body class="pc-layout">
+
+<aside class="pc-sidebar" id="pcSidebar"></aside>
+
+<div class="pc-main">
+  <header class="pc-topbar" id="pcTopbar"></header>
+
+  <div class="pc-content">
+    <div class="pc-page-header">
+      <h1 class="pc-page-title">学情智能分析</h1>
+      <p class="pc-page-subtitle">实时看板 · 趋势追踪 · 预警干预</p>
+    </div>
+
+    <!-- 学科选择 Tabs -->
+    <div class="an-subject-tabs" id="subjectTabs">
+      <div style="color:var(--text-muted);font-size:13px;">加载学科中...</div>
+    </div>
+
+    <!-- ① 统计概览卡片 -->
+    <div class="an-stat-cards" id="statCards">
+      <div class="an-stat-card"><div class="an-stat-label">加载中...</div></div>
+      <div class="an-stat-card"><div class="an-stat-label">加载中...</div></div>
+      <div class="an-stat-card"><div class="an-stat-label">加载中...</div></div>
+      <div class="an-stat-card"><div class="an-stat-label">加载中...</div></div>
+    </div>
+
+    <!-- ② 折线图区（两列） -->
+    <div class="an-chart-row">
+      <div class="an-chart-card">
+        <div class="an-chart-title">📈 近14天每日正确率</div>
+        <canvas class="an-chart-canvas" id="dailyTrendChart"></canvas>
+      </div>
+      <div class="an-chart-card">
+        <div class="an-chart-title">🎯 近10次评测得分</div>
+        <canvas class="an-chart-canvas" id="sessionTrendChart"></canvas>
+      </div>
+    </div>
+
+    <!-- ③ 知识点热力图 -->
+    <div class="an-heatmap-section">
+      <div class="an-heatmap-title">🗺️ 知识点掌握热力图</div>
+      <div class="an-heatmap-grid" id="heatmapGrid">
+        <div style="color:var(--text-muted);font-size:13px;">加载中...</div>
+      </div>
+      <div class="an-heatmap-legend">
+        <div class="an-heatmap-legend-item">
+          <div class="an-heatmap-legend-dot" style="background:#94a3b8;"></div>未学
+        </div>
+        <div class="an-heatmap-legend-item">
+          <div class="an-heatmap-legend-dot" style="background:#f59e0b;"></div>了解
+        </div>
+        <div class="an-heatmap-legend-item">
+          <div class="an-heatmap-legend-dot" style="background:#3b82f6;"></div>理解
+        </div>
+        <div class="an-heatmap-legend-item">
+          <div class="an-heatmap-legend-dot" style="background:#10b981;"></div>应用
+        </div>
+        <div class="an-heatmap-legend-item">
+          <div class="an-heatmap-legend-dot" style="background:#8b5cf6;"></div>精通
+        </div>
+      </div>
+    </div>
+
+    <!-- ④ 预警与干预 -->
+    <div class="an-alert-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text-primary);">⚠️ 学习预警</div>
+        <button class="an-alert-btn" onclick="runAlertCheck()">🔍 立即检测</button>
+      </div>
+      <div id="alertArea">
+        <div class="an-alert-empty">点击"立即检测"检查学习状态</div>
+      </div>
+
+      <!-- 补救练习包（折叠） -->
+      <div class="an-remedy-section" id="remedySection" style="display:none;">
+        <div class="an-remedy-header" onclick="toggleRemedy()">
+          📚 AI补救练习包 <span id="remedyToggleIcon">▼</span>
+        </div>
+        <div id="remedyList" style="display:none;"></div>
+      </div>
+    </div>
+
+  </div><!-- /pc-content -->
+</div><!-- /pc-main -->
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-analytics.js"></script>
+<script>initPCCommon('analytics');</script>
+</body>
+</html>

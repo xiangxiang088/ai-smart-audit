@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>我的 - AI智能记账</title>
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/profile.css">
+</head>
+<body>
+
+<div class="app-container">
+  <div class="profile-header">
+    <button class="profile-settings-btn" id="profileSettingsBtn">⚙️</button>
+    <div class="profile-avatar">👤</div>
+    <div class="profile-name" id="profileName"></div>
+  </div>
+
+  <div class="page-content">
+
+    <!-- 账本切换 -->
+    <div class="profile-section">
+      <div class="profile-menu" style="margin:0;">
+        <div class="menu-item book-switcher" id="bookSwitcher">
+          <span class="menu-icon">📒</span>
+          <span class="menu-text">当前账本</span>
+          <span class="menu-arrow" id="currentBookName">日常账本 ▾</span>
+          <div class="book-dropdown" id="bookDropdown"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 功能入口 2列大卡片 -->
+    <div class="profile-section">
+      <div class="profile-section-title">功能入口</div>
+      <div class="profile-feature-grid">
+        <a href="/loans.html" class="feature-card" style="text-decoration:none;">
+          <span class="feature-card-icon">💰</span>
+          <span class="feature-card-label">借贷中心</span>
+          <span class="feature-card-sub">借出 · 借入</span>
+        </a>
+        <div class="feature-card feature-card-ai" id="aiSettingsBtn">
+          <span class="feature-card-icon">🤖</span>
+          <span class="feature-card-label">AI助手</span>
+          <span class="feature-card-sub" id="aiStatusText">未配置</span>
+        </div>
+        <div class="feature-card" id="inviteBtn">
+          <span class="feature-card-icon">👥</span>
+          <span class="feature-card-label">邀请成员</span>
+          <span class="feature-card-sub">协同记账</span>
+        </div>
+        <div class="feature-card" id="noticeAdminBtn" style="display:none;">
+          <span class="feature-card-icon">📢</span>
+          <span class="feature-card-label">公告管理</span>
+          <span class="feature-card-sub">管理员</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 数据管理 3列小卡片 -->
+    <div class="profile-section">
+      <div class="profile-section-title">数据管理</div>
+      <div class="profile-tool-grid">
+        <div class="tool-card" id="exportCsvBtn">
+          <span class="tool-card-icon">📥</span>
+          <span class="tool-card-label">导出CSV</span>
+        </div>
+        <div class="tool-card" id="exportJsonBtn">
+          <span class="tool-card-icon">💾</span>
+          <span class="tool-card-label">备份数据</span>
+        </div>
+        <div class="tool-card" id="syncCatsBtn">
+          <span class="tool-card-icon">📂</span>
+          <span class="tool-card-label">同步分类</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 关于 3列小卡片 -->
+    <div class="profile-section">
+      <div class="profile-section-title">关于</div>
+      <div class="profile-tool-grid">
+        <div class="tool-card" id="feedbackBtn">
+          <span class="tool-card-icon">💬</span>
+          <span class="tool-card-label">反馈中心</span>
+        </div>
+        <div class="tool-card" id="versionBtn">
+          <span class="tool-card-icon">📋</span>
+          <span class="tool-card-label" id="currentVersionText">v2.0.2</span>
+        </div>
+        <div class="tool-card" id="contactBtn">
+          <span class="tool-card-icon">📱</span>
+          <span class="tool-card-label">联系作者</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 邀请弹窗 -->
+<div class="modal" id="inviteModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('inviteModal').classList.remove('show')">✕</button>
+      <span class="modal-title">邀请成员协同</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">
+        输入对方已注册的用户名，邀请加入当前账本
+      </p>
+      <div class="form-group">
+        <label class="form-label">用户名</label>
+        <input type="text" id="inviteUsername" placeholder="输入用户名">
+      </div>
+      <div class="form-group">
+        <label class="form-label">角色</label>
+        <select id="inviteRole">
+          <option value="editor">编辑者（可记账）</option>
+          <option value="viewer">查看者（只读）</option>
+        </select>
+      </div>
+      <button class="btn-primary" onclick="sendInvite()">发送邀请</button>
+    </div>
+  </div>
+</div>
+
+<!-- 新建账本弹窗 -->
+<div class="modal" id="newBookModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('newBookModal').classList.remove('show')">✕</button>
+      <span class="modal-title">新建账本</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">账本名称</label>
+        <input type="text" id="newBookName" placeholder="如：家庭账本、旅行账本">
+      </div>
+      <div class="form-group">
+        <label class="form-label">图标</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;" id="bookIconPicker"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">类型</label>
+        <select id="newBookType">
+          <option value="personal">个人</option>
+          <option value="family">家庭</option>
+          <option value="travel">旅行</option>
+          <option value="business">生意</option>
+        </select>
+      </div>
+      <button class="btn-primary" onclick="createBook()">创建</button>
+    </div>
+  </div>
+</div>
+
+<!-- 修改密码弹窗 -->
+<div class="modal" id="changePwdModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('changePwdModal').classList.remove('show')">✕</button>
+      <span class="modal-title">🔐 修改密码</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">原密码</label>
+        <input type="password" id="oldPassword" placeholder="请输入当前密码">
+      </div>
+      <div class="form-group">
+        <label class="form-label">新密码</label>
+        <input type="password" id="newPassword" placeholder="请输入新密码（至少6位）">
+      </div>
+      <div class="form-group">
+        <label class="form-label">确认新密码</label>
+        <input type="password" id="confirmPassword" placeholder="请再次输入新密码">
+      </div>
+      <button class="btn-primary" onclick="changePassword()">确认修改</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI设置弹窗 -->
+<div class="modal" id="aiSettingsModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('aiSettingsModal').classList.remove('show')">✕</button>
+      <span class="modal-title">🤖 AI智能助手设置</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:14px;line-height:1.6;">
+        接入智谱AI（免费GLM-4-Flash文本模型 + GLM-4V-Flash视觉模型），支持智能分析、语音记账、小票OCR识别等功能。<br>
+        请前往 <a href="https://open.bigmodel.cn" target="_blank" style="color:var(--primary);">open.bigmodel.cn</a> 注册获取API Key。
+      </p>
+      <div class="form-group">
+        <div class="toggle-row">
+          <span class="toggle-label">启用AI智能功能</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="aiEnabled">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">API地址</label>
+        <input type="text" id="aiApiUrl" placeholder="https://open.bigmodel.cn/api/paas/v4/chat/completions">
+      </div>
+      <div class="form-group">
+        <label class="form-label">文本模型</label>
+        <input type="text" id="aiModel" placeholder="glm-4-flash">
+      </div>
+      <div class="form-group">
+        <label class="form-label">视觉模型（小票OCR）</label>
+        <input type="text" id="aiVisionModel" placeholder="glm-4v-flash">
+      </div>
+      <div class="form-group">
+        <label class="form-label">API Key</label>
+        <input type="password" id="aiApiKey" placeholder="输入智谱API Key（填写后保存）">
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;" id="aiKeyHint"></div>
+      </div>
+      <button class="btn-primary" onclick="saveAISettings()">保存设置</button>
+    </div>
+  </div>
+</div>
+
+<!-- 联系作者弹窗 -->
+<div class="modal" id="contactModal">
+  <div class="modal-content contact-modal-content">
+    <div class="contact-hero">
+      <button class="modal-close contact-close" onclick="document.getElementById('contactModal').classList.remove('show')">✕</button>
+      <div class="contact-hero-emoji">💬</div>
+      <div class="contact-hero-title">联系作者</div>
+      <div class="contact-hero-sub">扫码添加微信，一起交流进步</div>
+      <div class="contact-hero-deco"></div>
+    </div>
+    <div class="modal-body contact-body">
+      <div class="qrcode-card">
+        <div class="qrcode-badge">微信</div>
+        <div class="qrcode-wrap">
+          <img src="images/qrcode_for_author.jpg" alt="作者微信二维码" class="qrcode-img" onerror="this.style.display='none';document.getElementById('qrcodeFallback').style.display='flex';">
+          <div class="qrcode-fallback" id="qrcodeFallback" style="display:none;">
+            <span>二维码图片未放置</span>
+            <small>请将 qrcode_for_author.jpg 放入 public/images/ 目录</small>
+          </div>
+        </div>
+        <div class="qrcode-corner tl"></div>
+        <div class="qrcode-corner tr"></div>
+        <div class="qrcode-corner bl"></div>
+        <div class="qrcode-corner br"></div>
+      </div>
+      <p class="contact-slogan">正在走向自律</p>
+      <a href="https://xiaoxiang113.blog.csdn.net" target="_blank" rel="noopener" class="contact-blog-link">
+        <span class="blog-icon">🌐</span>
+        <span class="blog-text">正在走向自律 · 主页</span>
+        <span class="blog-arrow">›</span>
+      </a>
+      <div class="contact-divider"><span>或</span></div>
+      <p class="contact-tip">💡 通过"反馈中心"提交您的宝贵建议</p>
+    </div>
+  </div>
+</div>
+
+<!-- 反馈中心弹窗 -->
+<div class="modal" id="feedbackModal">
+  <div class="modal-content feedback-modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('feedbackModal').classList.remove('show')">✕</button>
+      <span class="modal-title">💬 反馈中心</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <div class="feedback-tabs">
+        <button class="feedback-tab active" data-tab="submit">提交反馈</button>
+        <button class="feedback-tab" data-tab="history">我的反馈</button>
+      </div>
+
+      <!-- 提交反馈 -->
+      <div class="feedback-panel" id="feedbackSubmitPanel">
+        <div class="form-group">
+          <label class="form-label">反馈类型</label>
+          <div class="feedback-type-row">
+            <label class="feedback-type-option">
+              <input type="radio" name="feedbackType" value="bug" checked>
+              <span>🐛 缺陷反馈</span>
+            </label>
+            <label class="feedback-type-option">
+              <input type="radio" name="feedbackType" value="suggestion">
+              <span>💡 功能建议</span>
+            </label>
+            <label class="feedback-type-option">
+              <input type="radio" name="feedbackType" value="other">
+              <span>📝 其他</span>
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">反馈内容</label>
+          <textarea id="feedbackContent" placeholder="请详细描述您遇到的问题或建议，我们会认真对待每一条反馈" rows="5" maxlength="2000"></textarea>
+          <div class="feedback-char-count"><span id="feedbackCharCount">0</span>/2000</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">联系方式（选填）</label>
+          <input type="text" id="feedbackContact" placeholder="邮箱/微信/手机号，方便我们回复您">
+        </div>
+        <button class="btn-primary" onclick="submitFeedback()">提交反馈</button>
+      </div>
+
+      <!-- 历史反馈 -->
+      <div class="feedback-panel" id="feedbackHistoryPanel" style="display:none;">
+        <div id="feedbackHistoryList" class="feedback-history-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 公告管理弹窗（管理员） -->
+<div class="modal" id="noticeAdminModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('noticeAdminModal').classList.remove('show')">✕</button>
+      <span class="modal-title">📢 公告管理</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <!-- 列表 -->
+      <div id="noticeAdminListPanel">
+        <button class="notice-admin-new" onclick="showNoticeEditor()">+ 发布新公告</button>
+        <div id="noticeAdminList"></div>
+      </div>
+      <!-- 编辑 -->
+      <div id="noticeAdminEditorPanel" style="display:none;">
+        <button class="notice-back-btn" onclick="backToNoticeAdminList()">‹ 返回列表</button>
+        <div class="form-group">
+          <label class="form-label">标题</label>
+          <input type="text" id="noticeEditTitle" maxlength="100" placeholder="公告标题">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">类型</label>
+            <select id="noticeEditType">
+              <option value="1">通知</option>
+              <option value="2">公告</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">状态</label>
+            <select id="noticeEditStatus">
+              <option value="0">立即发布</option>
+              <option value="1">保存为草稿</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="toggle-row" style="padding:8px 0;">
+            <div>
+              <span class="toggle-label" style="font-size:14px;">弹窗公告</span>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">勾选后用户进入应用时会弹出确认对话框（仅用于系统升级/重要通知）</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="noticeEditPopup">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">内容</label>
+          <textarea id="noticeEditContent" rows="8" maxlength="10000" placeholder="请输入公告内容（支持换行）" style="resize:vertical;"></textarea>
+        </div>
+        <button class="btn-primary" onclick="saveNoticeAdmin()">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 版本记录弹窗 -->
+<div class="modal" id="versionModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('versionModal').classList.remove('show')">✕</button>
+      <span class="modal-title">📋 版本记录</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <div id="versionList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 设置底部弹层 -->
+<div class="settings-sheet-mask" id="settingsSheetMask" onclick="closeSettingsSheet()"></div>
+<div class="settings-sheet" id="settingsSheet">
+  <div class="settings-sheet-handle"></div>
+  <div class="settings-sheet-title">设置</div>
+  <div class="profile-menu" style="margin:0 0 12px;">
+    <div class="menu-item" id="switchPcBtn" onclick="switchToPC()">
+      <span class="menu-icon">💻</span>
+      <span class="menu-text">切换到PC版</span>
+      <span class="menu-arrow">›</span>
+    </div>
+    <div class="menu-item" id="themeMenu">
+      <span class="menu-icon">🌙</span>
+      <span class="menu-text">深色模式</span>
+      <span class="menu-arrow" id="themeText">关闭</span>
+    </div>
+    <div class="menu-item" id="changePwdBtn">
+      <span class="menu-icon">🔐</span>
+      <span class="menu-text">修改密码</span>
+      <span class="menu-arrow">›</span>
+    </div>
+    <div class="menu-item" id="logoutBtn">
+      <span class="menu-icon">🚪</span>
+      <span class="menu-text" style="color:var(--danger);">退出登录</span>
+    </div>
+  </div>
+</div>
+
+<script src="js/common.js"></script>
+<script src="js/profile.js"></script>
+<script>initCommon('profile');</script>
+</body>
+</html>

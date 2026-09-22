@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>报表 - AI智能记账</title>
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/reports.css">
+</head>
+<body>
+
+<div class="app-container">
+  <div class="reports-header">
+    <div class="reports-title">统计报表</div>
+    <div class="reports-mode-tabs">
+      <button class="reports-mode-btn active" data-mode="week">周报</button>
+      <button class="reports-mode-btn" data-mode="month">月报</button>
+      <button class="reports-mode-btn" data-mode="quarter">季报</button>
+      <button class="reports-mode-btn" data-mode="year">年报</button>
+    </div>
+    <div class="reports-period-selector">
+      <button class="reports-nav-btn" id="prevPeriod">‹</button>
+      <span class="reports-period-text" id="currentPeriodText"></span>
+      <button class="reports-nav-btn" id="nextPeriod">›</button>
+    </div>
+    <div class="reports-summary-row">
+      <div class="reports-summary-item">
+        <div class="reports-summary-label">收入</div>
+        <div class="reports-summary-value income" id="sumIncome">¥0</div>
+      </div>
+      <div class="reports-summary-item">
+        <div class="reports-summary-label">支出</div>
+        <div class="reports-summary-value expense" id="sumExpense">¥0</div>
+      </div>
+      <div class="reports-summary-item">
+        <div class="reports-summary-label">结余</div>
+        <div class="reports-summary-value" id="sumBalance">¥0</div>
+      </div>
+    </div>
+    <div class="ai-btn-row">
+      <button class="ai-analyze-btn" id="aiAnalyzeBtn">🤖 AI智能分析</button>
+      <button class="ai-history-btn" id="aiHistoryBtn">📋 历史分析</button>
+    </div>
+  </div>
+
+  <div class="page-content" style="padding-top:16px;">
+    <!-- AI智能洞察卡片 -->
+    <div class="ai-insights-row">
+      <div class="ai-insight-card" id="anomalyCard" style="display:none;">
+        <div class="ai-insight-head warning">
+          <span>⚠️ 异常检测</span>
+        </div>
+        <div class="ai-insight-body" id="anomalyContent"></div>
+      </div>
+      <div class="ai-insight-card" id="predictCard" style="display:none;">
+        <div class="ai-insight-head info">
+          <span>🔮 月底预测</span>
+        </div>
+        <div class="ai-insight-body" id="predictContent"></div>
+      </div>
+      <button class="ai-budget-btn" id="aiBudgetBtn" onclick="loadBudgetRecommend()">💡 智能预算推荐</button>
+    </div>
+
+    <!-- 预算推荐弹窗内容 -->
+    <div class="chart-card" id="budgetCard" style="display:none;">
+      <div class="chart-title">💡 AI推荐下月预算</div>
+      <div id="budgetContent"></div>
+    </div>
+
+    <!-- 分类占比饼图 + 排行 -->
+    <div class="chart-card">
+      <div class="tab-bar">
+        <button class="tab-item active" data-type="expense">支出</button>
+        <button class="tab-item" data-type="income">收入</button>
+      </div>
+      <div class="pie-chart-wrap">
+        <div class="pie-chart" id="pieChart">
+          <div class="pie-center">
+            <div class="pie-total-label" id="pieLabel">总支出</div>
+            <div class="pie-total-value" id="pieTotal">¥0</div>
+          </div>
+        </div>
+        <div class="legend" id="pieLegend"></div>
+      </div>
+    </div>
+
+    <!-- 分类排行榜 -->
+    <div class="chart-card">
+      <div class="chart-title" id="rankTitle">支出排行</div>
+      <div id="categoryRank"></div>
+    </div>
+
+    <!-- 收支趋势 -->
+    <div class="chart-card">
+      <div class="chart-title" id="trendChartTitle">每日收支趋势</div>
+      <canvas id="trendChart" height="200"></canvas>
+      <div class="chart-legend">
+        <span class="legend-line expense"><i></i>支出</span>
+        <span class="legend-line income"><i></i>收入</span>
+      </div>
+    </div>
+
+    <!-- 账户收支统计 -->
+    <div class="chart-card">
+      <div class="chart-title">账户收支统计</div>
+      <div id="accountStats"></div>
+    </div>
+
+    <!-- 对比图 -->
+    <div class="chart-card" id="compareCard">
+      <div class="chart-title" id="compareChartTitle">对比</div>
+      <canvas id="monthlyChart" height="200"></canvas>
+      <div class="chart-legend">
+        <span class="legend-bar income"><i></i>收入</span>
+        <span class="legend-bar expense"><i></i>支出</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AI分析结果弹窗 -->
+<div class="modal" id="aiResultModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('aiResultModal').classList.remove('show')">✕</button>
+      <span class="modal-title">🤖 AI智能分析</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <div id="aiAnalyzing" style="text-align:center;padding:30px 0;">
+        <div style="font-size:40px;margin-bottom:12px;">🤔</div>
+        <div style="color:var(--text-secondary);font-size:14px;">AI正在分析您的账单数据...</div>
+      </div>
+      <div id="aiResult" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- AI历史分析列表弹窗 -->
+<div class="modal" id="aiHistoryModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('aiHistoryModal').classList.remove('show')">✕</button>
+      <span class="modal-title">📋 历史分析记录</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <div id="aiHistoryList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- AI历史详情弹窗 -->
+<div class="modal" id="aiHistoryDetailModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('aiHistoryDetailModal').classList.remove('show')">✕</button>
+      <span class="modal-title" id="aiHistoryDetailTitle">分析详情</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <div id="aiHistoryDetailContent"></div>
+    </div>
+  </div>
+</div>
+
+<script src="js/common.js"></script>
+<script src="js/reports.js"></script>
+<script>
+initCommon('reports');
+</script>
+</body>
+</html>

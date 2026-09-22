@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>借贷中心 - 智能记账 PC版</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-loans.css">
+<link rel="stylesheet" href="/pc/css/pc-addrecord.css">
+</head>
+<body>
+<div class="pc-wrapper">
+  <aside class="pc-sidebar" id="pcSidebar"></aside>
+  <div class="pc-main">
+    <header class="pc-topbar" id="pcTopbar"></header>
+    <main class="pc-content">
+
+      <!-- 汇总 -->
+      <div class="pc-stat-grid" style="margin-bottom:16px;">
+        <div class="pc-stat-item">
+          <div class="pc-stat-label">借出待还</div>
+          <div class="pc-stat-value income" id="totalLend">¥0</div>
+        </div>
+        <div class="pc-stat-item">
+          <div class="pc-stat-label">借入待还</div>
+          <div class="pc-stat-value expense" id="totalBorrow">¥0</div>
+        </div>
+      </div>
+
+      <!-- 分类 Tab -->
+      <div class="pc-card" style="margin-bottom:16px;padding:14px 18px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+          <div class="loan-tabs" style="margin:0;">
+            <button class="loan-tab active" data-type="all">全部</button>
+            <button class="loan-tab" data-type="lend">借出</button>
+            <button class="loan-tab" data-type="borrow">借入</button>
+          </div>
+          <button class="pc-topbar-btn primary" onclick="document.getElementById('loanModal').classList.add('show')">+ 新增借贷</button>
+        </div>
+      </div>
+
+      <!-- 借贷列表 -->
+      <div id="loansList"></div>
+
+    </main>
+  </div>
+</div>
+
+<!-- 新增借贷弹窗 -->
+<div class="modal" id="loanModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('loanModal').classList.remove('show')">✕</button>
+      <span class="modal-title">新增借贷</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <div class="type-tabs">
+        <button class="type-tab active lend" data-loan-type="lend" id="loanTypeLend">借出</button>
+        <button class="type-tab borrow" data-loan-type="borrow" id="loanTypeBorrow">借入</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">对方名称</label>
+        <input type="text" id="loanContact" placeholder="如：张三">
+      </div>
+      <div class="form-group">
+        <label class="form-label">金额</label>
+        <input type="number" id="loanAmount" placeholder="0.00" step="0.01">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">日期</label>
+          <input type="date" id="loanDate">
+        </div>
+        <div class="form-group">
+          <label class="form-label">还款日期</label>
+          <input type="date" id="loanDueDate">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">备注</label>
+        <input type="text" id="loanNote" placeholder="选填">
+      </div>
+      <div class="form-group">
+        <label class="form-label">凭证图片（选填）</label>
+        <div class="loan-img-upload" onclick="document.getElementById('loanImageInput').click()">
+          <input type="file" id="loanImageInput" accept="image/*" style="display:none" onchange="onLoanImageChange(event)">
+          <img id="loanImagePreview" style="display:none;max-width:100%;border-radius:6px;">
+          <span id="loanImgUploadHint">点击上传凭证图片</span>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="saveLoan()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 还款弹窗 -->
+<div class="modal" id="repayModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('repayModal').classList.remove('show')">✕</button>
+      <span class="modal-title">记录还款</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">还款金额</label>
+        <input type="number" id="repayAmount" placeholder="0.00" step="0.01">
+      </div>
+      <div class="form-group">
+        <label class="form-label">还款日期</label>
+        <input type="date" id="repayDate">
+      </div>
+      <div class="form-group">
+        <label class="form-label">备注（选填）</label>
+        <input type="text" id="repayNote" placeholder="如：现金还款、银行转账等">
+      </div>
+      <button class="btn-primary" onclick="confirmRepay()">确认还款</button>
+    </div>
+  </div>
+</div>
+
+<!-- 借贷详情弹窗 -->
+<div class="modal" id="loanDetailModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('loanDetailModal').classList.remove('show')">✕</button>
+      <span class="modal-title">借贷详情</span>
+      <button class="loan-edit-btn" onclick="openEditLoanModal()">编辑</button>
+    </div>
+    <div class="modal-body" id="loanDetailBody"></div>
+  </div>
+</div>
+
+<!-- 编辑借贷弹窗 -->
+<div class="modal" id="loanEditModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('loanEditModal').classList.remove('show')">✕</button>
+      <span class="modal-title">编辑借贷</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">备注</label>
+        <input type="text" id="editLoanNote" placeholder="选填">
+      </div>
+      <div class="form-group">
+        <label class="form-label">凭证图片</label>
+        <div class="loan-img-upload" onclick="document.getElementById('editLoanImageInput').click()">
+          <input type="file" id="editLoanImageInput" accept="image/*" style="display:none" onchange="onEditLoanImageChange(event)">
+          <img id="editLoanImagePreview" style="display:none;max-width:100%;border-radius:6px;">
+          <span id="editLoanImgUploadHint">点击上传或更换图片</span>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="saveEditLoan()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-addrecord.js"></script>
+<script src="/pc/js/pc-loans.js"></script>
+<script>initPCCommon('loans');</script>
+</body>
+</html>

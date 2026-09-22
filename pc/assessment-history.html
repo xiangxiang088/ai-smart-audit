@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>评测历史 - AI智能教育助手</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-education.css">
+<link rel="stylesheet" href="/pc/css/pc-assessment-history.css">
+</head>
+<body class="pc-layout">
+
+<aside class="pc-sidebar" id="pcSidebar"></aside>
+
+<div class="pc-main">
+  <header class="pc-topbar" id="pcTopbar"></header>
+
+  <div class="pc-content">
+
+    <div class="pc-page-header">
+      <h1 class="pc-page-title">
+        <a href="/pc/assessment.html" class="history-back-btn" title="返回智能评测">←</a>
+        📊 评测历史
+      </h1>
+      <p class="pc-page-subtitle">查看历次评测得分与知识点掌握情况，回顾AI学习建议</p>
+    </div>
+
+    <!-- 评测历史列表 -->
+    <div class="assessment-history-container">
+      <div class="history-header">
+        <div class="history-filters">
+          <select id="levelFilter" class="filter-select" onchange="onLevelFilterChange()">
+            <option value="">全部学段</option>
+            <option value="primary">🏫 小学</option>
+            <option value="junior">📚 初中</option>
+            <option value="high">🎓 高中</option>
+            <option value="university">🏛️ 大学</option>
+          </select>
+          <select id="subjectFilter" class="filter-select" onchange="loadHistory()">
+            <option value="">全部学科</option>
+          </select>
+          <select id="typeFilter" class="filter-select" onchange="loadHistory()">
+            <option value="">全部类型</option>
+            <option value="entry">入学水平评测</option>
+            <option value="scan">知识点漏洞扫描</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 列表 -->
+      <div id="historyList" class="history-list"></div>
+
+      <!-- 分页 -->
+      <div id="historyPagination" class="history-pagination"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-assessment-history.js"></script>
+<script>initPCCommon('assessment-history');</script>
+</body>
+</html>

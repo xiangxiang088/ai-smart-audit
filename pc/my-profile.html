@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人资料 - AI智能教育助手</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-profile.css">
+</head>
+<body class="pc-layout">
+
+<!-- 侧边栏 -->
+<aside class="pc-sidebar" id="pcSidebar"></aside>
+
+<!-- 主内容区 -->
+<div class="pc-main">
+  <!-- 顶部栏 -->
+  <header class="pc-topbar" id="pcTopbar"></header>
+
+  <!-- 页面内容 -->
+  <div class="pc-content">
+    <div class="pc-page-header">
+      <h1 class="pc-page-title">设置</h1>
+      <p class="pc-page-subtitle">账号信息 · 修改密码 · 退出登录</p>
+    </div>
+
+    <div class="profile-layout">
+      <!-- 左侧：头像 & 基本信息 -->
+      <div class="profile-left">
+        <div class="pc-card profile-avatar-card">
+          <div class="profile-avatar-wrap">
+            <div class="profile-avatar" id="profileAvatar">👤</div>
+          </div>
+          <div class="profile-nickname" id="profileNickname">--</div>
+          <div class="profile-username" id="profileUsername">--</div>
+          <div class="profile-role-tag" id="profileRole">学生</div>
+          <div class="profile-stats-row">
+            <div class="profile-stat-item">
+              <div class="profile-stat-num" id="statSessions">--</div>
+              <div class="profile-stat-label">总评测</div>
+            </div>
+            <div class="profile-stat-item">
+              <div class="profile-stat-num" id="statAvgScore">--</div>
+              <div class="profile-stat-label">平均分</div>
+            </div>
+            <div class="profile-stat-item">
+              <div class="profile-stat-num" id="statSubjects">--</div>
+              <div class="profile-stat-label">学科数</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 移动端入口 -->
+        <div class="pc-card profile-mobile-card">
+          <div class="profile-mobile-title">📱 移动端</div>
+          <p style="font-size:13px;color:var(--text-muted);margin:8px 0 12px;">
+            移动端正在开发中，敬请期待...
+          </p>
+        </div>
+      </div>
+
+      <!-- 右侧：编辑表单 + 修改密码 -->
+      <div class="profile-right">
+        <!-- 基本信息编辑 -->
+        <div class="pc-card">
+          <div class="pc-card-header">
+            <h3 class="pc-card-title">基本信息</h3>
+          </div>
+          <form id="profileForm" class="profile-form">
+            <div class="profile-field">
+              <label>用户名</label>
+              <input type="text" id="fieldUsername" disabled placeholder="用户名不可修改">
+              <span class="profile-field-hint">用户名注册后不可修改</span>
+            </div>
+            <div class="profile-field">
+              <label>昵称</label>
+              <input type="text" id="fieldNickname" placeholder="请输入昵称" maxlength="20">
+            </div>
+            <div class="profile-field">
+              <label>邮箱</label>
+              <input type="email" id="fieldEmail" placeholder="请输入邮箱（选填）" maxlength="100">
+            </div>
+            <div class="profile-form-actions">
+              <button type="submit" class="pc-btn pc-btn-primary" id="saveProfileBtn">
+                保存修改
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 修改密码 -->
+        <div class="pc-card" style="margin-top:16px;">
+          <div class="pc-card-header">
+            <h3 class="pc-card-title">修改密码</h3>
+          </div>
+          <form id="passwordForm" class="profile-form">
+            <div class="profile-field">
+              <label>当前密码</label>
+              <input type="password" id="fieldOldPassword" placeholder="请输入当前密码" autocomplete="current-password">
+            </div>
+            <div class="profile-field">
+              <label>新密码</label>
+              <input type="password" id="fieldNewPassword" placeholder="至少6位字符" autocomplete="new-password">
+            </div>
+            <div class="profile-field">
+              <label>确认新密码</label>
+              <input type="password" id="fieldConfirmPassword" placeholder="再次输入新密码" autocomplete="new-password">
+            </div>
+            <div class="profile-form-actions">
+              <button type="submit" class="pc-btn pc-btn-primary" id="savePasswordBtn">
+                更新密码
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 账号操作 -->
+        <div class="pc-card" style="margin-top:16px;">
+          <div class="pc-card-header">
+            <h3 class="pc-card-title">账号操作</h3>
+          </div>
+          <div class="profile-actions">
+            <button class="pc-btn pc-btn-outline profile-action-btn" onclick="handleLogout()">
+              🚪 退出登录
+            </button>
+          </div>
+        </div>
+
+        <!-- 版本发布记录 -->
+        <div class="pc-card" style="margin-top:16px;">
+          <div class="pc-card-header">
+            <h3 class="pc-card-title">📋 版本发布记录</h3>
+          </div>
+          <div id="versionList" style="display:flex;flex-direction:column;gap:12px;">
+            <div style="color:var(--text-muted);font-size:13px;">加载中...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-my-profile.js"></script>
+<script>initPCCommon('myprofile');</script>
+</body>
+</html>

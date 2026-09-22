@@ -1,0 +1,839 @@
+/* ===== AI快捷记账栏 ===== */
+.ai-quick-bar {
+  margin-bottom: 12px;
+}
+.ai-quick-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card);
+  border-radius: 24px;
+  padding: 4px 4px 4px 14px;
+  box-shadow: var(--shadow);
+}
+.ai-quick-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.ai-quick-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  min-width: 0;
+  padding: 8px 0;
+}
+.ai-quick-input::placeholder {
+  color: var(--text-muted);
+}
+.ai-quick-btn {
+  padding: 7px 14px;
+  border: none;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.ai-quick-btn:disabled {
+  opacity: 0.6;
+}
+.ai-quick-ocr-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-secondary);
+  font-size: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ai-quick-ocr-btn:active {
+  background: var(--border);
+}
+.ai-quick-result {
+  margin-top: 8px;
+}
+.ai-quick-ok {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: var(--shadow);
+}
+.ai-quick-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 0.9375rem;
+  margin-bottom: 10px;
+}
+.ai-quick-type {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 8px;
+  color: white;
+}
+.ai-quick-type.expense { background: #ef4444; }
+.ai-quick-type.income { background: #10b981; }
+.ai-quick-type.transfer { background: #3b82f6; }
+.ai-quick-amount {
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--text-primary);
+}
+.ai-quick-actions {
+  display: flex;
+  gap: 6px;
+}
+.ai-quick-save {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ai-quick-edit {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ai-quick-cancel {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+.ai-quick-err {
+  background: rgba(239,68,68,0.08);
+  color: var(--danger);
+  font-size: 0.9375rem;
+  padding: 10px 14px;
+  border-radius: 10px;
+  text-align: center;
+}
+.ai-quick-loading {
+  background: var(--card);
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+  padding: 14px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+/* ===== 顶部操作按钮（日历/筛选） ===== */
+.top-bar-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 12px;
+  border-radius: 20px;
+  background: var(--bg);
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.top-bar-action-btn:active {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary-light);
+}
+.top-bar-action-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+.top-bar-action-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+.top-bar-action-text {
+  font-size: 0.8125rem;
+  line-height: 1;
+}
+
+/* ===== 账单列表 ===== */
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.filter-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.9375rem;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+.filter-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+.filter-row-cats {
+  align-items: flex-start;
+}
+.filter-cat-wrap {
+  flex: 1;
+  min-width: 0;
+}
+.cat-filter-bar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  min-height: 34px; /* 固定最小高度，防止二级药丸出现时页面跳动 */
+}
+.cat-filter-bar:first-child {
+  margin-bottom: 6px;
+}
+.cat-filter-sub {
+  min-height: 30px;
+}
+.cat-filter-pill {
+  padding: 5px 12px;
+  border-radius: 16px;
+  font-size: 0.8125rem;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.cat-filter-pill:active {
+  transform: scale(0.96);
+}
+.cat-filter-pill.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+.cat-filter-pill.sub {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  background: var(--card);
+}
+.cat-filter-pill.sub.active {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+.filter-quick-btn {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.filter-quick-btn:active {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.record-day { margin-bottom: 20px; }
+.record-day-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+
+/* ===== 账单高级筛选 ===== */
+.filter-section {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 12px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+}
+.filter-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.filter-row:last-child { margin-bottom: 0; }
+.filter-label {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  min-width: 32px;
+}
+.filter-date-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.filter-date-row input[type="date"] {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 0.8125rem;
+}
+.filter-reset-btn {
+  padding: 6px 12px;
+  font-size: 0.8125rem;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+/* ===== 日历视图 ===== */
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 8px;
+  box-shadow: var(--shadow);
+}
+.calendar-weekday {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding: 6px 0;
+}
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  position: relative;
+}
+.calendar-day.today {
+  border: 1px solid var(--primary);
+}
+.calendar-day.selected {
+  background: var(--primary);
+  color: white;
+}
+.calendar-day.other-month {
+  color: var(--text-muted);
+  opacity: 0.4;
+}
+.calendar-day .day-income {
+  font-size: 8px;
+  color: var(--success);
+  line-height: 1;
+}
+.calendar-day .day-expense {
+  font-size: 8px;
+  color: var(--danger);
+  line-height: 1;
+}
+.calendar-day.selected .day-income,
+.calendar-day.selected .day-expense { color: rgba(255,255,255,0.8); }
+
+/* ===== 年份导航 ===== */
+.year-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.year-nav-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text-secondary);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow);
+}
+.year-nav-btn:active {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+.year-nav-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 60px;
+  text-align: center;
+}
+
+/* ===== 汇总栏样式 ===== */
+.filter-summary {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+}
+.filter-summary-count {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 10px;
+}
+.filter-summary-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.filter-summary-item {
+  text-align: center;
+  padding: 0 4px;
+}
+.filter-summary-item + .filter-summary-item {
+  border-left: 1px solid var(--border);
+}
+.summary-label {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  margin-bottom: 3px;
+}
+.summary-value {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.summary-income { color: var(--success); }
+.summary-expense { color: var(--danger); }
+.summary-balance { color: var(--primary); }
+
+/* ===== 月份分组 ===== */
+.month-section {
+  margin-bottom: 12px;
+}
+.month-header {
+  position: sticky;
+  top: 49px;
+  z-index: 10;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.month-header:active {
+  background: var(--bg-secondary);
+}
+.month-header.expanded {
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.month-arrow {
+  font-size: 10px;
+  color: var(--text-muted);
+  width: 12px;
+  text-align: center;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+  align-self: center;
+}
+.month-header.expanded .month-arrow {
+  color: var(--primary);
+}
+.month-label {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  flex-shrink: 0;
+  align-self: center;
+}
+.month-stats {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+.month-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 68px;
+  padding: 0 6px;
+  gap: 1px;
+}
+.month-stat-label {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  line-height: 1;
+}
+.month-stat-value {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.month-body {
+  background: var(--card);
+  border-radius: 0 0 var(--radius) var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.month-body .record-day {
+  margin-bottom: 0;
+  padding: 0 8px;
+}
+.month-body .record-day-header {
+  padding: 8px 8px;
+}
+.month-body .record-day:not(:last-child) .record-day-header {
+  border-bottom: 1px solid var(--border);
+}
+
+/* ===== AI餐饮健康建议 ===== */
+.diet-ai-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 9px 16px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-radius: 20px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(16,185,129,0.3);
+  width: 100%;
+  justify-content: center;
+}
+.diet-ai-btn:active { transform: scale(0.97); }
+
+.diet-loading {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+.diet-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+}
+.diet-result {
+  font-size: 0.9375rem;
+  line-height: 1.8;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+.diet-error {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--danger);
+  font-size: 0.9375rem;
+}
+
+/* ===== 饮食分析 Tab ===== */
+.diet-tab-btn {
+  flex: 1;
+  padding: 10px 0;
+  border: none;
+  background: transparent;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  font-weight: 500;
+}
+.diet-tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+/* ===== 饮食弹窗聊天布局 ===== */
+.diet-modal-content {
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+.diet-tab-bar {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+  flex-shrink: 0;
+}
+.diet-history-btn {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+  color: var(--text-secondary);
+  width: 36px;
+}
+.diet-chat-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+.diet-chat-msgs {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.diet-history-pane {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* 欢迎界面 */
+.diet-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 20px 20px;
+  text-align: center;
+}
+.diet-welcome-icon { font-size: 48px; margin-bottom: 10px; }
+.diet-welcome-title { font-size: 1.125rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+.diet-welcome-desc { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 10px; }
+/* 日期快捷按钮行 */
+.diet-range-bar {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.diet-range-btn {
+  padding: 5px 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+.diet-range-btn:active { opacity: 0.7; }
+/* 日期输入行 */
+.diet-range-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.diet-range-inputs input[type="date"] {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 8px;
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  width: 130px;
+}
+.diet-range-sep {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+.diet-start-btn {
+  padding: 12px 36px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  border-radius: 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(16,185,129,0.35);
+}
+.diet-start-btn:active { transform: scale(0.97); }
+
+/* 聊天气泡 */
+.diet-bubble {
+  max-width: 84%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  word-break: break-word;
+}
+.diet-bubble-user {
+  align-self: flex-end;
+  background: var(--primary);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+.diet-bubble-ai {
+  align-self: flex-start;
+  background: var(--card);
+  color: var(--text-primary);
+  border-bottom-left-radius: 4px;
+  box-shadow: var(--shadow);
+}
+.diet-bubble-loading {
+  opacity: 0.6;
+}
+.diet-bubble-system {
+  align-self: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+/* 输入栏 */
+.diet-chat-bar {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--card);
+}
+.diet-chat-input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 8px 14px;
+  font-size: 0.9375rem;
+  outline: none;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  min-width: 0;
+}
+.diet-chat-input:focus { border-color: var(--primary); }
+.diet-chat-send {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 20px;
+  background: var(--primary);
+  color: white;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.diet-chat-send:disabled { opacity: 0.5; }
+
+/* ===== 饮食历史列表 ===== */
+.diet-history-item {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.diet-history-stat {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+.diet-history-item:active { opacity: 0.8; }
+/* 标题行：标题+日期左，箭头右 */
+.diet-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+.diet-history-label-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.diet-history-label {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.diet-history-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.diet-history-chevron {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+.diet-history-chevron.open {
+  transform: rotate(90deg);
+}
+/* 历史聊天气泡区 */
+.diet-hist-chat {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0 4px;
+}
+.diet-hist-bubble {
+  font-size: 0.875rem;
+}
+/* 继续对话按钮 */
+.diet-continue-btn {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 9px 0;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+}
+.diet-continue-btn:active { opacity: 0.75; }

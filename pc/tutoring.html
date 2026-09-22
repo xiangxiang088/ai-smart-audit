@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 交互辅导 - AI智能教育助手</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-education.css">
+<link rel="stylesheet" href="/pc/css/pc-tutoring.css">
+</head>
+<body class="pc-layout">
+
+<aside class="pc-sidebar" id="pcSidebar"></aside>
+
+<div class="pc-main">
+  <header class="pc-topbar" id="pcTopbar"></header>
+
+  <div class="pc-content">
+    <div class="pc-page-header">
+      <h1 class="pc-page-title">AI 交互辅导</h1>
+      <p class="pc-page-subtitle">智能答疑 · 主观批改 · 口语评测 · 虚拟实验指导</p>
+    </div>
+
+    <!-- 功能 Tab -->
+    <div class="tut-tabs">
+      <button class="tut-tab-btn active" onclick="switchTab('qa')">💬 智能答疑</button>
+      <button class="tut-tab-btn" onclick="switchTab('grade')">📝 主观批改</button>
+      <button class="tut-tab-btn" onclick="switchTab('oral')">🎙️ 口语评测</button>
+      <button class="tut-tab-btn" onclick="switchTab('experiment')">🔬 虚拟实验</button>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         Tab1 — 智能答疑
+    ══════════════════════════════════════════ -->
+    <div class="tut-panel active" id="panel-qa">
+      <div class="tut-chat-layout">
+
+        <!-- 历史会话侧边栏 -->
+        <div class="tut-history-col pc-card" style="padding:16px;">
+          <div class="tut-history-header">
+            <span class="tut-history-title">历史会话</span>
+            <button class="tut-new-btn" onclick="newQaSession()">+ 新建</button>
+          </div>
+          <div class="tut-history-list" id="qaHistoryList">
+            <div style="text-align:center;padding:20px 0;color:var(--text-muted);font-size:12px;">加载中...</div>
+          </div>
+        </div>
+
+        <!-- 聊天主区 -->
+        <div class="tut-chat-main">
+          <div class="tut-chat-header">
+            <span class="tut-chat-subject">学科：</span>
+            <select class="tut-subject-select" id="qaSubjectSelect" onchange="onQaSubjectChange()">
+              <option value="">全科</option>
+            </select>
+            <span style="flex:1;"></span>
+            <span style="font-size:12px;color:var(--text-muted);" id="qaSessionTitle">请选择或新建会话</span>
+          </div>
+          <div class="tut-chat-messages" id="qaChatMessages">
+            <div class="tut-chat-empty">
+              <div class="tut-empty-icon">💬</div>
+              <div>有什么不懂的？直接问我吧</div>
+              <div style="font-size:12px;margin-top:8px;">支持数学、语文、英语、物理、化学、生物等学科</div>
+            </div>
+          </div>
+          <div class="tut-chat-input-area">
+            <textarea class="tut-input-box" id="qaInput" rows="2"
+              placeholder="输入你的问题，例如：解释一下牛顿第二定律..."
+              onkeydown="onQaInputKeydown(event)"></textarea>
+            <button class="tut-send-btn" id="qaSendBtn" onclick="sendQaMessage()">发送</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         Tab2 — 主观题批改
+    ══════════════════════════════════════════ -->
+    <div class="tut-panel" id="panel-grade">
+      <div class="tut-grade-layout">
+
+        <!-- 左列：输入表单 -->
+        <div class="pc-card" style="padding:20px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:16px;">📝 提交批改</div>
+          <div class="tut-grade-form">
+            <div class="tut-form-group">
+              <div class="tut-form-label">题目内容</div>
+              <textarea class="tut-textarea" id="gradeQuestion" rows="4"
+                placeholder="粘贴或输入题目原文..."></textarea>
+            </div>
+            <div class="tut-form-group">
+              <div class="tut-form-label">题目类型</div>
+              <select class="tut-type-select" id="gradeType">
+                <option value="subjective">主观题（综合）</option>
+                <option value="math">数学（公式推导）</option>
+                <option value="essay">英语作文</option>
+                <option value="code">编程代码</option>
+              </select>
+            </div>
+            <div class="tut-form-group">
+              <div class="tut-form-label">满分分值</div>
+              <input type="number" id="gradeMaxScore" value="10" min="1" max="100"
+                style="padding:7px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--bg-secondary);color:var(--text-primary);width:80px;">
+            </div>
+            <div class="tut-form-group">
+              <div class="tut-form-label">学生答案</div>
+              <textarea class="tut-textarea" id="gradeAnswer" rows="6"
+                placeholder="粘贴或输入学生作答内容..."></textarea>
+            </div>
+            <button class="tut-grade-btn" id="gradeSubmitBtn" onclick="submitGrade()">
+              🤖 AI 批改
+            </button>
+          </div>
+        </div>
+
+        <!-- 右列：批改结果 -->
+        <div class="tut-grade-result" id="gradeResult">
+          <div class="tut-grade-empty">
+            <div style="font-size:36px;margin-bottom:8px;">📋</div>
+            <div>提交题目和答案后，AI 将给出评分和改进建议</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         Tab3 — 口语评测
+    ══════════════════════════════════════════ -->
+    <div class="tut-panel" id="panel-oral">
+      <div class="tut-oral-layout">
+
+        <!-- 左列：输入 -->
+        <div class="pc-card" style="padding:20px;">
+          <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:16px;">🎙️ 朗读评测</div>
+          <div class="tut-oral-form">
+            <div class="tut-form-group">
+              <div class="tut-form-label">朗读材料（原文）</div>
+              <textarea class="tut-textarea" id="oralOriginal" rows="5"
+                placeholder="输入朗读原文，例如：The quick brown fox jumps over the lazy dog."></textarea>
+            </div>
+
+            <!-- 录音控制 -->
+            <div class="tut-form-group">
+              <div class="tut-form-label">录音朗读</div>
+              <div class="tut-oral-controls">
+                <button class="tut-record-btn" id="recordBtn" onclick="toggleRecording()" title="开始/停止录音">
+                  🎙️
+                </button>
+                <div class="tut-record-status" id="recordStatus">点击麦克风开始朗读</div>
+              </div>
+              <!-- 浏览器不支持时的降级提示 -->
+              <div class="tut-unsupported-notice" id="speechUnsupported">
+                ⚠️ 你的浏览器不支持语音识别（建议使用 Chrome 或 Edge）。
+                请在下方手动输入朗读内容进行评测。
+              </div>
+            </div>
+
+            <div class="tut-form-group">
+              <div class="tut-form-label">转录内容（自动填入，也可手动输入）</div>
+              <div class="tut-transcript-box" id="oralTranscript" contenteditable="true"
+                style="min-height:80px;outline:none;"
+                placeholder="朗读后自动识别，或手动粘贴..."></div>
+            </div>
+
+            <button class="tut-oral-btn" id="oralEvalBtn" onclick="submitOralEval()">
+              📊 提交评测
+            </button>
+          </div>
+        </div>
+
+        <!-- 右列：评测结果 -->
+        <div class="tut-oral-result" id="oralResult">
+          <div class="tut-oral-empty">
+            <div style="font-size:36px;margin-bottom:8px;">🎯</div>
+            <div>朗读后提交，AI 将从准确度、流利度、完整度三个维度评分</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         Tab4 — 虚拟实验
+    ══════════════════════════════════════════ -->
+    <div class="tut-panel" id="panel-experiment">
+
+      <!-- 实验选择网格 -->
+      <div class="pc-card" style="padding:20px;margin-bottom:16px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:14px;">🔬 选择实验</div>
+        <div class="tut-exp-selector" id="expSelector">
+          <div style="color:var(--text-muted);font-size:13px;">加载中...</div>
+        </div>
+      </div>
+
+      <!-- 实验聊天区（始终显示） -->
+      <div id="expChatSection">
+        <div class="pc-card" style="padding:0;overflow:hidden;">
+          <div class="tut-chat-header" style="padding:12px 16px;border-bottom:1px solid var(--border);">
+            <span style="font-size:15px;font-weight:700;color:var(--text-primary);" id="expChatTitle">🔬 实验指导对话</span>
+            <span style="flex:1;"></span>
+            <button class="tut-new-btn" id="expResetBtn" onclick="resetExpChat()" style="display:none;">重新选择</button>
+          </div>
+          <div class="tut-chat-messages" id="expChatMessages" style="height:340px;">
+            <div class="tut-chat-empty" id="expChatGuide">
+              <div class="tut-empty-icon">🔬</div>
+              <div style="font-weight:600;margin-bottom:6px;">从上方选择一个实验，即可开始与 AI 对话</div>
+              <div style="font-size:12px;color:var(--text-muted);">AI 将引导你完成实验步骤，解答原理和现象</div>
+            </div>
+          </div>
+          <div class="tut-chat-input-area" id="expInputArea">
+            <textarea class="tut-input-box" id="expInput" rows="2"
+              placeholder="⬆️ 请先从上方选择一个实验..."
+              onkeydown="onExpInputKeydown(event)"
+              disabled style="opacity:0.5;cursor:not-allowed;"></textarea>
+            <button class="tut-send-btn" id="expSendBtn" onclick="sendExpMessage()" disabled style="opacity:0.5;">发送</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- /pc-content -->
+</div><!-- /pc-main -->
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-tutoring.js"></script>
+<script>initPCCommon('tutoring');</script>
+</body>
+</html>

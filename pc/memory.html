@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>成长记录 - AI智能教育助手</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-education.css">
+<link rel="stylesheet" href="/pc/css/pc-analytics.css">
+<link rel="stylesheet" href="/pc/css/pc-memory.css">
+</head>
+<body class="pc-layout">
+
+<aside class="pc-sidebar" id="pcSidebar"></aside>
+
+<div class="pc-main">
+  <header class="pc-topbar" id="pcTopbar"></header>
+
+  <div class="pc-content">
+    <div class="pc-page-header">
+      <h1 class="pc-page-title">成长记录</h1>
+      <p class="pc-page-subtitle">学习时间轴 · 掌握度趋势 · AI交互历史</p>
+    </div>
+
+    <!-- ① 全局统计卡片 -->
+    <div class="mem-stat-cards" id="statCards">
+      <div class="mem-stat-card"><div class="mem-stat-label">加载中...</div></div>
+      <div class="mem-stat-card"><div class="mem-stat-label">加载中...</div></div>
+      <div class="mem-stat-card"><div class="mem-stat-label">加载中...</div></div>
+      <div class="mem-stat-card"><div class="mem-stat-label">加载中...</div></div>
+    </div>
+
+    <!-- ② 学科 Tabs（切换掌握度折线图） -->
+    <div class="mem-subject-tabs" id="subjectTabs">
+      <div style="color:var(--text-muted);font-size:13px;">加载学科中...</div>
+    </div>
+
+    <!-- ③ 两列主布局：左=日历+折线图，右=当天详情 -->
+    <div class="mem-two-col">
+
+      <!-- 左列 -->
+      <div>
+        <!-- 近6月学习日历热力图 -->
+        <div class="mem-calendar-section">
+          <div class="mem-calendar-title">📅 近6月学习日历</div>
+          <div class="mem-calendar-months" id="calMonths"></div>
+          <div class="mem-calendar-weekdays" id="calWeekdays"></div>
+          <div class="mem-calendar-grid" id="calGrid">
+            <div class="mem-loading">加载中...</div>
+          </div>
+          <div class="mem-cal-legend" id="calLegend"></div>
+        </div>
+
+        <!-- 掌握度趋势折线图 -->
+        <div class="mem-trend-section">
+          <div class="mem-trend-title">📈 掌握度趋势（近90天）</div>
+          <canvas class="mem-trend-canvas" id="masteryTrendChart"></canvas>
+          <div class="mem-trend-empty" id="trendEmpty" style="display:none;">
+            暂无该学科的掌握度数据
+          </div>
+        </div>
+      </div>
+
+      <!-- 右列：当天详情面板 -->
+      <div class="mem-day-panel" id="dayPanel">
+        <div class="mem-day-panel-title">
+          <span>📖 当天学习详情</span>
+          <span class="mem-day-date" id="dayPanelDate"></span>
+        </div>
+        <div id="dayPanelContent">
+          <div class="mem-day-empty">
+            <div class="mem-day-empty-icon">👆</div>
+            点击日历格子查看某天的学习详情
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /mem-two-col -->
+
+    <!-- ④ AI交互历史搜索区 -->
+    <div class="mem-search-section">
+      <div class="mem-search-title">🔍 AI交互历史</div>
+      <div class="mem-search-bar">
+        <input
+          class="mem-search-input"
+          type="text"
+          id="historyQuery"
+          placeholder="搜索问答内容、口语原文..."
+          onkeydown="if(event.key==='Enter')searchHistory()"
+        >
+        <select class="mem-search-select" id="historyType" onchange="searchHistory()">
+          <option value="">全部类型</option>
+          <option value="qa">智能问答</option>
+          <option value="oral">口语评测</option>
+        </select>
+        <select class="mem-search-select" id="historyLevel" onchange="onHistoryLevelChange()">
+          <option value="">全部学段</option>
+        </select>
+        <select class="mem-search-select" id="historySubject" onchange="searchHistory()">
+          <option value="">全部学科</option>
+        </select>
+        <button class="mem-search-btn" onclick="searchHistory()">搜索</button>
+      </div>
+
+      <!-- 结果列表 -->
+      <div class="mem-history-list" id="historyList">
+        <div class="mem-empty">
+          <div class="mem-empty-icon">💬</div>
+          输入关键词或筛选条件搜索AI交互历史
+        </div>
+      </div>
+
+      <!-- 分页 -->
+      <div class="mem-pagination" id="historyPagination"></div>
+    </div>
+
+  </div><!-- /pc-content -->
+</div><!-- /pc-main -->
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-memory.js"></script>
+<script>initPCCommon('memory');</script>
+</body>
+</html>

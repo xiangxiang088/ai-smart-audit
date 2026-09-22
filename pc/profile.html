@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>能力画像 - AI智能教育助手</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-education.css">
+</head>
+<body>
+<div class="pc-wrapper">
+  <aside class="pc-sidebar" id="pcSidebar"></aside>
+  <div class="pc-main">
+    <header class="pc-topbar" id="pcTopbar"></header>
+    <main class="pc-content">
+
+      <!-- 学科切换标签 -->
+      <div class="pc-card" style="margin-bottom:16px;">
+        <div class="pc-card-title">
+          📊 知识点掌握能力画像
+          <button class="pc-topbar-btn primary" onclick="window.location.href='/pc/assessment.html'" style="margin-left:auto;padding:6px 16px;font-size:13px;">
+            📝 开始评测
+          </button>
+        </div>
+        <div id="subjectTabs" class="edu-tabs"></div>
+      </div>
+
+      <!-- 掌握度统计卡片 -->
+      <div class="pc-stat-grid" style="margin-bottom:16px;grid-template-columns:repeat(5,1fr);">
+        <div class="pc-stat-item">
+          <div class="pc-stat-label">未学</div>
+          <div class="pc-stat-value" id="countLevel0" style="color:var(--text-muted)">--</div>
+        </div>
+        <div class="pc-stat-item">
+          <div class="pc-stat-label">了解</div>
+          <div class="pc-stat-value" id="countLevel1" style="color:#f59e0b">--</div>
+        </div>
+        <div class="pc-stat-item">
+          <div class="pc-stat-label">理解</div>
+          <div class="pc-stat-value" id="countLevel2" style="color:#3b82f6">--</div>
+        </div>
+        <div class="pc-stat-item">
+          <div class="pc-stat-label">应用</div>
+          <div class="pc-stat-value" id="countLevel3" style="color:#10b981">--</div>
+        </div>
+        <div class="pc-stat-item">
+          <div class="pc-stat-label">精通</div>
+          <div class="pc-stat-value" id="countLevel4" style="color:#8b5cf6">--</div>
+        </div>
+      </div>
+
+      <!-- 两列：热力图 + 薄弱知识点列表 -->
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;">
+        <!-- 知识点热力图 -->
+        <div class="pc-card">
+          <div class="pc-card-title">🗺️ 知识点掌握热力图</div>
+          <div id="heatmapContainer" class="edu-heatmap-container">
+            <div class="pc-empty"><div class="pc-empty-icon">📊</div><div class="pc-empty-text">选择学科后显示</div></div>
+          </div>
+        </div>
+
+        <!-- 薄弱知识点 TOP 列表 -->
+        <div class="pc-card">
+          <div class="pc-card-title">⚠️ 需要加强的知识点</div>
+          <div id="weakKnowledgeList">
+            <div class="pc-empty"><div class="pc-empty-icon">✨</div><div class="pc-empty-text">完成评测后显示</div></div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-education-profile.js"></script>
+<script>initPCCommon('profile');</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>资料舱 - 工程审计智能审读</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-audit.css">
+<link rel="stylesheet" href="/pc/css/pc-visual-enhance.css">
+</head>
+<body>
+<div class="pc-wrapper">
+  <aside class="pc-sidebar" id="pcSidebar"></aside>
+  <div class="pc-main">
+    <header class="pc-topbar" id="pcTopbar"></header>
+    <main class="pc-content">
+
+      <div id="noProject" style="display:none;">
+        <div class="au-empty"><span class="icon">📁</span>请选择审计项目，或先从「审计项目」进入</div>
+        <div class="pc-card" style="max-width:420px;margin:16px auto;">
+          <div class="pc-card-title">选择审计项目</div>
+          <select class="au-select" id="projectPick" style="width:100%;"></select>
+        </div>
+      </div>
+
+      <div id="projectView" style="display:none;">
+        <div class="au-project-bar">
+          <button class="au-btn sm" onclick="location.href='/pc/audit-project.html'">‹ 返回项目</button>
+          <h2 id="projTitle">项目资料舱</h2>
+          <span id="projStats" class="au-stat-chip" style="margin-left:8px;"></span>
+        </div>
+
+        <div class="pc-card" style="margin-bottom:16px;">
+          <div class="pc-card-title">📤 上传审计资料</div>
+          <div class="au-upload-opts">
+            <div>
+              <label style="font-size:12px;color:#64748b;">资料用途（辅助自动归类）</label>
+              <select class="au-select" id="upCat">
+                <option value="">自动识别</option>
+                <option value="contract">合同/协议</option>
+                <option value="boq">工程量清单（中标清单）</option>
+                <option value="control_price">招标控制价</option>
+                <option value="settlement">结算书/审核报告</option>
+                <option value="visa">变更签证/工程联系单</option>
+                <option value="payment">支付凭证</option>
+                <option value="invoice">发票</option>
+                <option value="photo">现场照片</option>
+                <option value="other">其他</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:12px;color:#64748b;">PDF 类型（不确定选自动）</label>
+              <select class="au-select" id="upDocType">
+                <option value="">自动识别（默认图文）</option>
+                <option value="pdf_text">文字型 PDF</option>
+                <option value="pdf_mixed">图文混合型 PDF</option>
+                <option value="pdf_scan">扫描型 PDF（图片）</option>
+              </select>
+            </div>
+          </div>
+          <div class="au-uploader" id="uploader">
+            <span class="au-upload-icon">📄</span>
+            点击或拖拽文件到此处（支持 PDF / Word / Excel / PNG·JPG 图片，可多选，单个 PDF 最大 100MB）<br>
+            上传后将自动排队解析：PDF/图片走 PaddleOCR-VL（版面·表格·印章），Excel/Word 本地解析
+            <input type="file" id="fileInput" multiple accept=".pdf,.docx,.xlsx,.xls,.png,.jpg,.jpeg,.webp" style="display:none;">
+          </div>
+        </div>
+
+        <div class="pc-card">
+          <div class="pc-card-title">
+            🗂️ 资料清单
+            <button class="au-btn sm" id="btnRetryAll" style="margin-left:auto;">重试全部失败项</button>
+            <button class="au-btn sm" id="btnRefresh">刷新</button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="au-table">
+              <thead>
+                <tr>
+                  <th>文件</th><th>用途</th><th>大小</th><th>解析状态</th><th>页/表</th><th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="docRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-audit-documents.js"></script>
+<script>initPCCommon('audit-documents');</script>
+</body>
+</html>

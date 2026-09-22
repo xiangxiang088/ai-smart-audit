@@ -1,0 +1,183 @@
+/* ============================================================
+ * pc-favorites.css - 我的收藏页面专用样式
+ * ============================================================ */
+
+.favorites-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* ===== 左侧分类栏 ===== */
+.favorites-sidebar {
+  background: var(--card, #fff);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: var(--radius, 12px);
+  padding: 12px;
+  position: sticky;
+  top: 16px;
+}
+.favorites-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary, #64748b);
+  padding: 4px 8px 10px;
+}
+.fav-add-cat-btn {
+  border: none;
+  background: var(--bg-secondary, #f1f5f9);
+  color: var(--primary, #3b82f6);
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fav-add-cat-btn:hover {
+  background: rgba(59,130,246,0.15);
+}
+
+.favorites-category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.fav-cat-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-secondary, #64748b);
+  transition: all 0.15s;
+}
+.fav-cat-item:hover {
+  background: var(--bg-secondary, #f8fafc);
+}
+.fav-cat-item.active {
+  background: rgba(59,130,246,0.1);
+  color: var(--primary, #3b82f6);
+  font-weight: 600;
+}
+.fav-cat-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.fav-cat-count {
+  font-size: 11px;
+  color: var(--text-muted, #94a3b8);
+  flex-shrink: 0;
+}
+.fav-cat-actions {
+  display: none;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.fav-cat-item:hover .fav-cat-actions {
+  display: flex;
+}
+.fav-cat-action-btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-muted, #94a3b8);
+  padding: 2px;
+  line-height: 1;
+}
+.fav-cat-action-btn:hover {
+  color: var(--danger, #ef4444);
+}
+
+/* ===== 右侧主区域 ===== */
+.favorites-main {
+  min-width: 0;
+}
+.favorites-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.favorites-current-cat {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+}
+
+.favorites-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.fav-question-card {
+  background: var(--card, #fff);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: var(--radius-sm, 8px);
+  padding: 16px;
+  position: relative;
+}
+.fav-question-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.fav-question-meta {
+  font-size: 11px;
+  color: var(--text-muted, #94a3b8);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.fav-question-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-left: auto;
+}
+.fav-move-select {
+  font-size: 12px;
+  padding: 4px 22px 4px 8px;
+  border-radius: 6px;
+}
+.fav-remove-btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #f59e0b;
+  line-height: 1;
+  padding: 2px 4px;
+}
+.fav-remove-btn:hover {
+  transform: scale(1.1);
+}
+
+@media (max-width: 900px) {
+  .favorites-layout {
+    grid-template-columns: 1fr;
+  }
+  .favorites-sidebar {
+    position: static;
+  }
+}

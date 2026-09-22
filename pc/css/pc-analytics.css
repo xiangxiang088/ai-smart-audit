@@ -1,0 +1,236 @@
+/* ===== 学习数据智能分析专用样式 - pc-analytics.css ===== */
+
+/* ─── 学科 Tab ─── */
+.an-subject-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.an-tab-btn {
+  padding: 7px 18px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--card);
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.an-tab-btn:hover  { border-color: var(--primary); color: var(--primary); }
+.an-tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 600; }
+
+/* 学段 Tab 行（多学段模式） */
+.an-subject-tabs .subj-level-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.an-subject-tabs .subj-level-tab {
+  padding: 5px 16px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.an-subject-tabs .subj-level-tab:hover  { border-color: var(--primary); color: var(--primary); }
+.an-subject-tabs .subj-level-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+/* 学科按钮行 */
+.an-subject-tabs .subj-level-btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 4px 0 2px;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── 统计卡片行 ─── */
+.an-stat-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.an-stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.an-stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.an-stat-num {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+.an-stat-num.primary { color: var(--primary); }
+.an-stat-trend {
+  font-size: 12px;
+  margin-top: 2px;
+}
+.an-stat-trend.up   { color: #10b981; }
+.an-stat-trend.down { color: #ef4444; }
+.an-stat-trend.none { color: var(--text-muted); }
+
+/* ─── 折线图区 ─── */
+.an-chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.an-chart-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+.an-chart-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+.an-chart-canvas {
+  width: 100%;
+  height: 180px;
+  display: block;
+}
+
+/* ─── 热力图区 ─── */
+.an-heatmap-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin-bottom: 20px;
+}
+.an-heatmap-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+}
+.an-heatmap-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.an-heatmap-node {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: default;
+  transition: transform 0.15s;
+  white-space: nowrap;
+}
+.an-heatmap-node:hover { transform: scale(1.06); }
+.an-heatmap-legend {
+  display: flex;
+  gap: 14px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.an-heatmap-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.an-heatmap-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* ─── 预警卡片 ─── */
+.an-alert-section {
+  margin-bottom: 20px;
+}
+.an-alert-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 4px solid #f59e0b;
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.an-alert-card.danger { border-left-color: #ef4444; }
+.an-alert-icon { font-size: 22px; flex-shrink: 0; }
+.an-alert-body { flex: 1; }
+.an-alert-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+}
+.an-alert-msg { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+.an-alert-actions { margin-top: 8px; display: flex; gap: 8px; }
+.an-alert-btn {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  background: var(--card);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.an-alert-btn:hover { background: var(--primary); color: #fff; }
+.an-alert-empty {
+  padding: 16px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* ─── 补救练习折叠区 ─── */
+.an-remedy-section {
+  margin-top: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.an-remedy-header {
+  padding: 10px 14px;
+  background: var(--bg-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.an-remedy-list { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.an-remedy-item {
+  padding: 10px 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.an-remedy-knowledge {
+  font-size: 11px;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+.an-remedy-content { font-size: 13px; color: var(--text-primary); line-height: 1.6; }

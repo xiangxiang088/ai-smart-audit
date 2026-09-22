@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据报表 - 智能记账 PC版</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-reports.css">
+<link rel="stylesheet" href="/pc/css/pc-addrecord.css">
+</head>
+<body>
+<div class="pc-wrapper">
+  <aside class="pc-sidebar" id="pcSidebar"></aside>
+  <div class="pc-main">
+    <header class="pc-topbar" id="pcTopbar"></header>
+    <main class="pc-content">
+
+      <!-- 报表模式切换 + 周期导航 + AI按钮 -->
+      <div class="pc-card" style="margin-bottom:16px;padding:14px 18px;">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <div class="reports-mode-tabs" style="display:flex;gap:6px;">
+            <button class="reports-mode-btn active" data-mode="week">周报</button>
+            <button class="reports-mode-btn" data-mode="month">月报</button>
+            <button class="reports-mode-btn" data-mode="quarter">季报</button>
+            <button class="reports-mode-btn" data-mode="year">年报</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-left:auto;">
+            <button id="prevPeriod" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--card);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">‹</button>
+            <span id="currentPeriodText" style="font-weight:700;font-size:15px;min-width:150px;text-align:center;"></span>
+            <button id="nextPeriod" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--card);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">›</button>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="ai-analyze-btn" id="aiAnalyzeBtn">🤖 AI智能分析</button>
+            <button class="ai-history-btn" id="aiHistoryBtn">📋 历史分析</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 汇总 -->
+      <div class="pc-stat-grid" style="margin-bottom:16px;">
+        <div class="pc-stat-item">
+          <div class="pc-stat-label">收入</div>
+          <div class="pc-stat-value income" id="sumIncome">¥0</div>
+        </div>
+        <div class="pc-stat-item">
+          <div class="pc-stat-label">支出</div>
+          <div class="pc-stat-value expense" id="sumExpense">¥0</div>
+        </div>
+        <div class="pc-stat-item">
+          <div class="pc-stat-label">结余</div>
+          <div class="pc-stat-value" id="sumBalance">¥0</div>
+        </div>
+      </div>
+
+      <!-- AI洞察行（月报模式自动显示） -->
+      <div class="ai-insights-row" style="margin-bottom:16px;">
+        <div class="ai-insight-card" id="anomalyCard" style="display:none;">
+          <div class="ai-insight-head warning"><span>⚠️ 异常检测</span></div>
+          <div class="ai-insight-body" id="anomalyContent"></div>
+        </div>
+        <div class="ai-insight-card" id="predictCard" style="display:none;">
+          <div class="ai-insight-head info"><span>🔮 月底预测</span></div>
+          <div class="ai-insight-body" id="predictContent"></div>
+        </div>
+        <button class="ai-budget-btn" id="aiBudgetBtn" onclick="loadBudgetRecommend()">💡 智能预算推荐</button>
+      </div>
+
+      <!-- AI预算推荐结果 -->
+      <div class="pc-card" id="budgetCard" style="display:none;margin-bottom:16px;">
+        <div class="pc-card-title">💡 AI推荐下月预算</div>
+        <div id="budgetContent"></div>
+      </div>
+
+      <!-- 两列：饼图 + 分类排行 -->
+      <div class="pc-two-col" style="margin-bottom:16px;">
+        <div class="pc-card">
+          <div class="tab-bar">
+            <button class="tab-item active" data-type="expense">支出</button>
+            <button class="tab-item" data-type="income">收入</button>
+          </div>
+          <div class="pie-chart-wrap">
+            <div class="pie-chart" id="pieChart">
+              <div class="pie-center">
+                <div class="pie-total-label" id="pieLabel">总支出</div>
+                <div class="pie-total-value" id="pieTotal">¥0</div>
+              </div>
+            </div>
+            <div class="legend" id="pieLegend"></div>
+          </div>
+        </div>
+        <div class="pc-card">
+          <div class="chart-title" id="rankTitle">支出排行</div>
+          <div id="categoryRank"></div>
+        </div>
+      </div>
+
+      <!-- 收支趋势图 -->
+      <div class="pc-card" style="margin-bottom:16px;">
+        <div class="pc-card-title" id="trendChartTitle">每日收支趋势</div>
+        <canvas id="trendChart" height="200"></canvas>
+        <div class="chart-legend">
+          <span class="legend-line expense"><i></i>支出</span>
+          <span class="legend-line income"><i></i>收入</span>
+        </div>
+      </div>
+
+      <!-- 账户收支统计 -->
+      <div class="pc-card" style="margin-bottom:16px;">
+        <div class="pc-card-title">账户收支统计</div>
+        <div id="accountStats"></div>
+      </div>
+
+      <!-- 对比图（月/季报模式有） -->
+      <div class="pc-card" id="compareCard" style="margin-bottom:16px;">
+        <div class="pc-card-title" id="compareChartTitle">对比</div>
+        <canvas id="monthlyChart" height="200"></canvas>
+        <div class="chart-legend">
+          <span class="legend-bar income"><i></i>收入</span>
+          <span class="legend-bar expense"><i></i>支出</span>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- AI分析结果弹窗 -->
+<div class="modal" id="aiResultModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('aiResultModal').classList.remove('show')">✕</button>
+      <span class="modal-title">🤖 AI智能分析</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <div id="aiAnalyzing" style="text-align:center;padding:30px 0;">
+        <div style="font-size:40px;margin-bottom:12px;">🤔</div>
+        <div style="color:var(--text-secondary);font-size:14px;">AI正在分析您的账单数据...</div>
+      </div>
+      <div id="aiResult" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- AI历史分析列表弹窗 -->
+<div class="modal" id="aiHistoryModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('aiHistoryModal').classList.remove('show')">✕</button>
+      <span class="modal-title">📋 历史分析记录</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <div id="aiHistoryList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- AI历史详情弹窗 -->
+<div class="modal" id="aiHistoryDetailModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('aiHistoryDetailModal').classList.remove('show')">✕</button>
+      <span class="modal-title" id="aiHistoryDetailTitle">分析详情</span>
+      <span style="width:24px;"></span>
+    </div>
+    <div class="modal-body">
+      <div id="aiHistoryDetailContent"></div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-addrecord.js"></script>
+<script src="/pc/js/pc-reports.js"></script>
+<script>initPCCommon('reports');</script>
+</body>
+</html>

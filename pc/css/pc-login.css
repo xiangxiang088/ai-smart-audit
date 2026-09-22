@@ -1,0 +1,304 @@
+/* ===== PC端登录页样式 ===== */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.pc-auth-body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  min-height: 100vh;
+  background: var(--bg, #f1f5f9);
+  color: var(--text, #1e293b);
+}
+
+/* 双栏布局 */
+.pc-auth-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===== 左侧品牌区 ===== */
+.pc-auth-brand {
+  flex: 1;
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 48px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 100px rgba(0,0,0,0.1);
+}
+.pc-auth-brand::before {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  top: -150px; right: -150px;
+  animation: float 20s ease-in-out infinite;
+}
+.pc-auth-brand::after {
+  content: '';
+  position: absolute;
+  width: 350px; height: 350px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  bottom: -100px; left: -100px;
+  animation: float 15s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(30px, -30px); }
+}
+
+.pc-auth-brand-content {
+  position: relative;
+  z-index: 1;
+  max-width: 420px;
+  width: 100%;
+}
+
+.pc-auth-logo {
+  font-size: 64px;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.2));
+  animation: logoFloat 3s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.pc-auth-title {
+  font-size: 36px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+
+.pc-auth-slogan {
+  font-size: 15px;
+  opacity: 0.85;
+  line-height: 1.7;
+  margin-bottom: 40px;
+}
+
+.pc-auth-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.pc-auth-features li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  opacity: 0.92;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+.pc-auth-features li:hover {
+  background: rgba(255,255,255,0.15);
+  transform: translateX(8px);
+}
+.pc-auth-features li span {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.pc-auth-brand-footer {
+  position: absolute;
+  bottom: 24px;
+  left: 0; right: 0;
+  text-align: center;
+  font-size: 12px;
+  opacity: 0.5;
+  z-index: 1;
+}
+
+/* ===== 右侧表单区 ===== */
+.pc-auth-form-panel {
+  width: 480px;
+  min-width: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: var(--card, #fff);
+  box-shadow: -10px 0 40px rgba(0,0,0,0.08);
+}
+
+.pc-auth-card {
+  width: 100%;
+  max-width: 360px;
+}
+
+.pc-auth-card-header {
+  margin-bottom: 32px;
+}
+.pc-auth-card-header h2 {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text, #1e293b);
+}
+.pc-auth-card-header p {
+  font-size: 14px;
+  color: var(--text-secondary, #64748b);
+}
+.pc-auth-platform-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  background: rgba(37,99,235,0.08);
+  border: 1px solid rgba(37,99,235,0.18);
+}
+.pc-auth-platform-icon { font-size: 18px; }
+.pc-auth-platform-name {
+  font-weight: 700;
+  color: #2563eb;
+}
+.pc-auth-platform-desc {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.pc-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.pc-auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pc-auth-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+}
+.pc-auth-field input {
+  height: 44px;
+  padding: 0 14px;
+  border: 2px solid var(--border, #e2e8f0);
+  border-radius: 10px;
+  font-size: 15px;
+  background: var(--bg, #f8fafc);
+  color: var(--text, #1e293b);
+  transition: all 0.2s ease;
+  outline: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+.pc-auth-field input:focus {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 4px rgba(14,165,233,0.1), 0 4px 8px rgba(0,0,0,0.08);
+  background: var(--card, #fff);
+  transform: translateY(-1px);
+}
+.pc-auth-field input::placeholder {
+  color: #94a3b8;
+}
+
+.pc-auth-submit {
+  height: 48px;
+  margin-top: 8px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 20px -4px rgba(14,165,233,0.4);
+  position: relative;
+  overflow: hidden;
+}
+.pc-auth-submit::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.pc-auth-submit:hover {
+  box-shadow: 0 12px 28px -6px rgba(14,165,233,0.5);
+  transform: translateY(-2px);
+}
+.pc-auth-submit:hover::before {
+  opacity: 1;
+}
+.pc-auth-submit:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px -2px rgba(14,165,233,0.4);
+}
+.pc-auth-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pc-auth-switch {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 14px;
+  color: var(--text-secondary, #64748b);
+}
+.pc-auth-switch a {
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: 4px;
+}
+.pc-auth-switch a:hover { text-decoration: underline; }
+
+.pc-auth-mobile-link {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border, #e2e8f0);
+}
+.pc-auth-mobile-link a {
+  font-size: 13px;
+  color: var(--text-secondary, #94a3b8);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.pc-auth-mobile-link a:hover { color: #2563eb; }
+
+/* ===== 响应式：窄屏隐藏品牌区 ===== */
+@media (max-width: 860px) {
+  .pc-auth-brand { display: none; }
+  .pc-auth-form-panel {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* ===== 深色模式适配 ===== */
+[data-theme="dark"] .pc-auth-form-panel {
+  background: var(--card, #1e293b);
+}
+[data-theme="dark"] .pc-auth-field input {
+  background: var(--bg-secondary, #0f172a);
+  border-color: var(--border, #334155);
+  color: var(--text, #e2e8f0);
+}
+[data-theme="dark"] .pc-auth-field input:focus {
+  background: var(--card, #1e293b);
+}

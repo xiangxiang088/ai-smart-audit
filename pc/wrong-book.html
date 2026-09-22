@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>错题本 - AI智能教育助手</title>
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/pc/css/pc-layout.css">
+<link rel="stylesheet" href="/pc/css/pc-components.css">
+<link rel="stylesheet" href="/pc/css/pc-education.css">
+<link rel="stylesheet" href="/pc/css/pc-wrong-book.css">
+</head>
+<body class="pc-layout">
+
+<aside class="pc-sidebar" id="pcSidebar"></aside>
+
+<div class="pc-main">
+  <header class="pc-topbar" id="pcTopbar"></header>
+
+  <div class="pc-content">
+    <div class="pc-page-header">
+      <h1 class="pc-page-title">错题本</h1>
+      <p class="pc-page-subtitle">分类筛选 · 艾宾浩斯遗忘曲线复习提醒 · 手动录入</p>
+    </div>
+
+    <!-- 错题本 -->
+    <div class="an-wq-section">
+      <div class="an-wq-header">
+        <div class="an-wq-title">📒 错题本</div>
+        <div class="an-filter-container">
+          <div class="an-filter-row">
+            <select class="wq-filter-select" id="wqLevelFilter" onchange="onWqLevelChange()">
+              <option value="">全部学段</option>
+              <option value="primary">🏫 小学</option>
+              <option value="junior">📚 初中</option>
+              <option value="high">🎓 高中</option>
+              <option value="university">🏛️ 大学</option>
+            </select>
+            <select class="wq-filter-select" id="wqSubjectFilter" onchange="onWqFilterChange()">
+              <option value="">全部学科</option>
+            </select>
+            <select class="wq-filter-select" id="wqErrorTypeFilter" onchange="onWqFilterChange()">
+              <option value="">全部错因</option>
+              <option value="careless">粗心</option>
+              <option value="concept">概念模糊</option>
+              <option value="method">方法缺失</option>
+              <option value="prerequisite">前置缺失</option>
+              <option value="unknown">未知</option>
+            </select>
+            <select class="wq-filter-select" id="wqSourceFilter" onchange="onWqFilterChange()">
+              <option value="">全部来源</option>
+              <option value="system">系统评测</option>
+              <option value="manual">手动录入</option>
+            </select>
+          </div>
+          <div class="an-filter-actions">
+            <button class="wq-btn-due" onclick="loadDueQuestions()" id="dueBtn">⏰ 今日待复习</button>
+            <button class="wq-btn-add" onclick="openManualWqModal()">✏️ 手动录入</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 统计摘要 -->
+      <div class="an-wq-stats" id="wqStats">
+        <div class="an-wq-stat">加载中...</div>
+      </div>
+
+      <!-- 待复习提示 -->
+      <div id="dueBanner" style="display:none;"></div>
+
+      <!-- 错题列表 -->
+      <div class="an-wq-list" id="wqList">
+        <div class="an-empty"><div class="an-empty-icon">📭</div>暂无错题记录</div>
+      </div>
+
+      <!-- 分页 -->
+      <div class="an-pagination" id="wqPagination"></div>
+    </div>
+
+    <!-- 手动录入错题弹窗 -->
+    <div id="manualWqModal" class="pc-modal-overlay hidden">
+      <div class="pc-modal" style="max-width:680px;">
+        <div class="pc-modal-header">
+          <span class="pc-modal-title">✏️ 手动录入错题</span>
+          <button class="pc-modal-close" onclick="closeManualWqModal()">×</button>
+        </div>
+        <div class="pc-modal-body">
+          <div class="pc-form-grid">
+            <div class="pc-form-row">
+              <label class="pc-form-label">学段 <span style="color:red;">*</span></label>
+              <select id="manualWqLevel" class="pc-form-input" onchange="loadManualWqSubjects()">
+                <option value="">-- 请先选择学段 --</option>
+                <option value="primary">🏫 小学</option>
+                <option value="junior">📚 初中</option>
+                <option value="high">🎓 高中</option>
+                <option value="university">🏛️ 大学</option>
+              </select>
+            </div>
+            <div class="pc-form-row">
+              <label class="pc-form-label">学科 <span style="color:red;">*</span></label>
+              <select id="manualWqSubject" class="pc-form-input" onchange="loadManualWqKnowledge(this.value)">
+                <option value="">-- 请先选择学段 --</option>
+              </select>
+            </div>
+            <div class="pc-form-row">
+              <label class="pc-form-label">知识点（选填）</label>
+              <select id="manualWqKnowledge" class="pc-form-input">
+                <option value="">-- 不指定 --</option>
+              </select>
+            </div>
+            <div class="pc-form-row">
+              <label class="pc-form-label">题型</label>
+              <select id="manualWqType" class="pc-form-input" onchange="onManualWqTypeChange()">
+                <option value="subjective">主观题</option>
+                <option value="single">单选题</option>
+                <option value="multi">多选题</option>
+                <option value="fill">填空题</option>
+              </select>
+            </div>
+            <div class="pc-form-row">
+              <label class="pc-form-label">错因</label>
+              <select id="manualWqErrorType" class="pc-form-input">
+                <option value="unknown">未知</option>
+                <option value="careless">粗心</option>
+                <option value="concept">概念模糊</option>
+                <option value="method">方法缺失</option>
+                <option value="prerequisite">前置缺失</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 选项录入区（单选/多选题时显示）-->
+          <div id="manualWqOptionsArea" style="display:none;margin-top:14px;">
+            <label class="pc-form-label">题目选项 <span style="color:red;">*</span></label>
+            <div id="manualWqOptionsContainer"></div>
+            <button class="pc-btn-add-option" onclick="addManualWqOption()">➕ 添加选项</button>
+          </div>
+
+          <div class="pc-form-row" style="margin-top:14px;">
+            <label class="pc-form-label">题目内容 <span style="color:red;">*</span></label>
+            <textarea id="manualWqContent" class="pc-form-input" rows="4" placeholder="输入题目内容，或粘贴文字..."></textarea>
+          </div>
+          <div class="pc-form-row">
+            <label class="pc-form-label">正确答案（选填）</label>
+            <textarea id="manualWqAnswer" class="pc-form-input" rows="2" placeholder="记录正确答案或解题思路..."></textarea>
+          </div>
+          <div class="pc-form-row">
+            <label class="pc-form-label">题目图片（选填）</label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="file" id="manualWqImageFile" accept="image/*" style="display:none;" onchange="onManualWqImageChange(this)">
+              <button class="pc-btn pc-btn-secondary" style="font-size:13px;" onclick="document.getElementById('manualWqImageFile').click()">📷 选择图片</button>
+              <span id="manualWqImageName" style="font-size:12px;color:var(--text-muted);">未选择</span>
+            </div>
+            <div id="manualWqImagePreview" style="margin-top:8px;"></div>
+          </div>
+        </div>
+        <div class="pc-modal-footer">
+          <button class="pc-btn pc-btn-secondary" onclick="closeManualWqModal()">取消</button>
+          <button class="pc-btn pc-btn-primary" id="manualWqSaveBtn" onclick="saveManualWq()">保存录入</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /pc-content -->
+</div><!-- /pc-main -->
+
+<script src="/js/common.js"></script>
+<script src="/pc/js/pc-common.js"></script>
+<script src="/pc/js/pc-wrong-book.js"></script>
+<script>initPCCommon('wrongbook');</script>
+</body>
+</html>
