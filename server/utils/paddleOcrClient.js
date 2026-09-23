@@ -15,6 +15,8 @@
  */
 const fs = require('fs');
 const path = require('path');
+const { recordAIRequest } = require('./aiLogger');
+const { createdBy } = require('./auditContext');
 // 注意：必须使用 Node 内置全局 FormData/Blob（Node 18+）。
 // 第三方 form-data 包生成的流在全局 fetch(undici) 下会出现 multipart 边界不被服务端识别的问题
 // （服务端返回 code=10007「模型传参错误」）。
@@ -479,7 +481,47 @@ async function downloadAsset(url, targetFile) {
  * @param {function} [p.onProgress] (progress:0-100, extra) => void
  * @returns {Promise<{jobId:string, result:object}>}
  */
-async function parseFile({ buffer, fileName, mimeType, onProgress }) {
+async function parseFile(params) {
+  const reqTime = new Date();
+  try {
+    const out = await _parseFileInner(params);
+    recordAIRequest({
+      userId: createdBy(),
+      businessType: 'paddle_ocr',
+      businessId: out.jobId,
+      requestUrl: JOB_URL,
+      requestModel: MODEL,
+      requestBody: { fileName: params.fileName, mimeType: params.mimeType },
+      responseResult: {
+        jobId: out.jobId,
+        docType: out.result.docType,
+        numPages: out.result.numPages,
+        elementCount: out.result.elements.length
+      },
+      requestTime: reqTime,
+      responseTime: new Date(),
+      status: 0
+    });
+    return out;
+  } catch (err) {
+    recordAIRequest({
+      userId: createdBy(),
+      businessType: 'paddle_ocr',
+      businessId: null,
+      requestUrl: JOB_URL,
+      requestModel: MODEL,
+      requestBody: { fileName: params.fileName, mimeType: params.mimeType },
+      responseResult: null,
+      requestTime: reqTime,
+      responseTime: new Date(),
+      status: 1,
+      errorMsg: `${err.code ? '[' + err.code + '] ' : ''}${err.message}`
+    });
+    throw err;
+  }
+}
+
+async function _parseFileInner({ buffer, fileName, mimeType, onProgress }) {
   const startedAt = Date.now();
   const jobId = await createJob(buffer, fileName, mimeType);
   onProgress && onProgress(2, { jobId, state: 'pending' });

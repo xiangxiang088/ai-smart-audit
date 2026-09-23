@@ -199,14 +199,14 @@ app.use('/api/feedback', createRateLimiter(10, 60 * 1000, '反馈提交过于频
 app.use('/api/notice', createRateLimiter(60, 60 * 1000, '请求过于频繁，请稍后再试'));
 app.use('/api/notifications', createRateLimiter(60, 60 * 1000, '请求过于频繁，请稍后再试'));
 
-// 教育系统AI分析限流（防止未授权的高频AI调用带来的成本风险）
+// 教育系统AI分析限流（已废弃，改造为工程审计系统）
 // 注意：必须在对应路由 app.use(path, router) 挂载之前注册，
 // 否则路由已 res.json() 响应后，Express 不会再执行这里的中间件（限流将完全失效）
-app.use('/api/edu/error-analysis', createRateLimiter(20, 60 * 1000, 'AI分析请求过于频繁，请1分钟后再试'));
-app.use('/api/edu/tutoring', createRateLimiter(20, 60 * 1000, 'AI请求过于频繁，请1分钟后再试'));
-app.use('/api/edu/analytics', createRateLimiter(20, 60 * 1000, 'AI分析请求过于频繁，请1分钟后再试'));
-app.use('/api/edu/assessment', createRateLimiter(30, 60 * 1000, '评测请求过于频繁，请1分钟后再试'));
-app.use('/api/edu/learning-engine', createRateLimiter(30, 60 * 1000, '请求过于频繁，请1分钟后再试'));
+// app.use('/api/edu/error-analysis', createRateLimiter(20, 60 * 1000, 'AI分析请求过于频繁，请1分钟后再试'));
+// app.use('/api/edu/tutoring', createRateLimiter(20, 60 * 1000, 'AI请求过于频繁，请1分钟后再试'));
+// app.use('/api/edu/analytics', createRateLimiter(20, 60 * 1000, 'AI分析请求过于频繁，请1分钟后再试'));
+// app.use('/api/edu/assessment', createRateLimiter(30, 60 * 1000, '评测请求过于频繁，请1分钟后再试'));
+// app.use('/api/edu/learning-engine', createRateLimiter(30, 60 * 1000, '请求过于频繁，请1分钟后再试'));
 
 // 信任反向代理：必须早于任何读取 req.ip 的中间件（限流、操作日志）。
 // 默认 'loopback'（只信任来自本机的代理，也即 Nginx 与 Node 同机部署的常见形态）——
@@ -332,38 +332,38 @@ app.use('/api/audit/bid-clearing', require('./routes/audit/bidClearing'));
 // app.use('/api/export', require('./routes/export'));
 // app.use('/api/ai', require('./routes/ai'));
 
-// ===== AI智能教育助手路由 =====
-const eduSubjects      = require('./routes/education/subjects');
-const eduAssessment    = require('./routes/education/assessment');
-const eduFavorites     = require('./routes/education/favorites');
-const eduProfile       = require('./routes/education/profile');
-const eduErrorAnalysis = require('./routes/education/error-analysis');
-const eduQuestions     = require('./routes/education/questions');
-const eduLearningEngine = require('./routes/education/learning-engine');
+// ===== AI智能教育助手路由（已废弃，改造为工程审计系统）=====
+// const eduSubjects      = require('./routes/education/subjects');
+// const eduAssessment    = require('./routes/education/assessment');
+// const eduFavorites     = require('./routes/education/favorites');
+// const eduProfile       = require('./routes/education/profile');
+// const eduErrorAnalysis = require('./routes/education/error-analysis');
+// const eduQuestions     = require('./routes/education/questions');
+// const eduLearningEngine = require('./routes/education/learning-engine');
 
 // 学科与知识点管理
-app.use('/api/edu', eduSubjects);
+// app.use('/api/edu', eduSubjects);
 // 评测流程（/api/edu/assessment/...）
-app.use('/api/edu/assessment', eduAssessment);
+// app.use('/api/edu/assessment', eduAssessment);
 // 学生画像（/api/edu/profile/...）
-app.use('/api/edu/profile', eduProfile);
+// app.use('/api/edu/profile', eduProfile);
 // 错因分析（/api/edu/error-analysis/...）
-app.use('/api/edu/error-analysis', eduErrorAnalysis);
+// app.use('/api/edu/error-analysis', eduErrorAnalysis);
 // 题库管理（/api/edu/admin/questions/...）
-app.use('/api/edu', eduQuestions);
+// app.use('/api/edu', eduQuestions);
 // 自适应学习引擎（/api/edu/learning-engine/...）
-app.use('/api/edu/learning-engine', eduLearningEngine);
+// app.use('/api/edu/learning-engine', eduLearningEngine);
 // 题目收藏（/api/edu/favorites/...）
-app.use('/api/edu/favorites', eduFavorites);
+// app.use('/api/edu/favorites', eduFavorites);
 // AI交互辅导工具（/api/edu/tutoring/...）
-const eduTutoring = require('./routes/education/tutoring');
-app.use('/api/edu/tutoring', eduTutoring);
+// const eduTutoring = require('./routes/education/tutoring');
+// app.use('/api/edu/tutoring', eduTutoring);
 // 学习数据智能分析（/api/edu/analytics/...）
-const eduAnalytics = require('./routes/education/analytics');
-app.use('/api/edu/analytics', eduAnalytics);
+// const eduAnalytics = require('./routes/education/analytics');
+// app.use('/api/edu/analytics', eduAnalytics);
 // 长期记忆与成长记录（/api/edu/memory/...）
-const eduMemory = require('./routes/education/memory');
-app.use('/api/edu/memory', eduMemory);
+// const eduMemory = require('./routes/education/memory');
+// app.use('/api/edu/memory', eduMemory);
 
 // 原记账模板接口已移除（教育系统不需要）
 

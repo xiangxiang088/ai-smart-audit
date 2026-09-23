@@ -309,6 +309,9 @@ async function runAnalysis(sessionId) {
     [updatedBy(), sessionId]);
   try {
     const result = await ark.chatCompletion({
+      businessType: 'bid_clearing',
+      businessId: String(sessionId),
+      userId: session.created_by || null,
       messages: [
         { role: 'system', content: BID_CLEARING_SYSTEM_PROMPT },
         { role: 'user', content: buildUserPrompt(detail) }

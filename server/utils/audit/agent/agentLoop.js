@@ -54,7 +54,9 @@ function extractEids(text) {
  *        - answer   成稿正文增量：{ text } 或降级重来时的 { reset:true }
  * @returns {Promise<{answer,citations,missing,confidence,trace,model,modelKey,usage,rounds}>}
  */
-async function runAgent({ projectId, question, history = [], onEvent = null }) {
+async function runAgent({ projectId, question, history = [], onEvent = null, userId = null }) {
+  // 写入 sl_sys_ai_log 的业务上下文（取证循环 + 成稿，所有模型尝试统一归属）
+  const aiLogCtx = { businessType: 'audit_chat', businessId: String(projectId), userId };
   // 事件回调只服务于「让用户看到进展」，自身异常绝不能影响取证主流程
   const emit = (type, data) => {
     if (!onEvent) return;
@@ -88,6 +90,7 @@ async function runAgent({ projectId, question, history = [], onEvent = null }) {
       text: `第 ${rounds} 轮取证：正在判断该调阅哪些资料…`
     });
     const resp = await ark.chatCompletion({
+      ...aiLogCtx,
       messages,
       tools: ctx.definitions,
       toolChoice: 'auto',
@@ -160,6 +163,7 @@ async function runAgent({ projectId, question, history = [], onEvent = null }) {
   try {
     finalResp = await ark.chatCompletion({
       ...finalParams,
+      ...aiLogCtx,
       stream: true,
       // 降级到备用模型前先清空，免得两个模型的半截正文粘成一段
       onReset: () => { answerStream.reset(); emit('answer', { reset: true }); },
@@ -174,7 +178,7 @@ async function runAgent({ projectId, question, history = [], onEvent = null }) {
     console.warn(`[agentLoop] 流式成稿失败，退回非流式：${e.message}`);
     emit('answer', { reset: true });
     emit('progress', { phase: 'finalize', text: '成稿重试中…' });
-    finalResp = await ark.chatCompletion(finalParams);
+    finalResp = await ark.chatCompletion({ ...finalParams, ...aiLogCtx });
   }
   accumulateUsage(finalResp.usage);
   lastModel = finalResp.model || lastModel;

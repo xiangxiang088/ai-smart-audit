@@ -7,6 +7,7 @@
  */
 const db = require('./db');
 const snowflake = require('./utils/snowflake');
+const { recordAIRequest } = require('./utils/aiLogger');
 
 // IP归属地缓存（内存缓存，避免重复请求API）
 const ipLocationCache = new Map();
@@ -17,7 +18,7 @@ const IP_CACHE_TTL = 24 * 60 * 60 * 1000; // 24小时过期
  * 解析IP归属地（内网IP直接返回，外网IP调用免费API）
  * 降级策略：ip2location.io(精度高，免费1000/天) → ip-api.com(中文国际覆盖)
  */
-async function resolveIpLocation(ip) {
+async function resolveIpLocation(ip, userId = null) {
   if (!ip) return '';
 
   // 内网IP/本地IP处理
@@ -150,8 +151,18 @@ async function resolveIpLocation(ip) {
   let location = '';
 
   // 主接口：ip2location.io（经测试对国内IP城市精度最高，免费1000次/天无需注册）
+  const ip2locReqTime = new Date();
   try {
-    const resp = await fetchWithTimeout(`https://api.ip2location.io/?ip=${ip}`);
+    const ip2locUrl = `https://api.ip2location.io/?ip=${ip}`;
+    const resp = await fetchWithTimeout(ip2locUrl);
+    recordAIRequest({
+      userId, businessType: 'ip_location', businessId: ip,
+      requestUrl: ip2locUrl, requestModel: 'ip2location.io',
+      requestBody: { ip }, responseResult: null,
+      requestTime: ip2locReqTime, responseTime: new Date(),
+      status: resp.ok ? 0 : 1,
+      errorMsg: resp.ok ? null : 'HTTP ' + resp.status
+    });
     if (resp.ok) {
       const data = await resp.json();
       if (data.country_code) {
@@ -186,8 +197,18 @@ async function resolveIpLocation(ip) {
   }
 
   // 备用接口：ip-api.com（支持中文lang=zh-CN，国际IP覆盖好）
+  const ipapiReqTime = new Date();
   try {
-    const resp = await fetchWithTimeout(`http://ip-api.com/json/${ip}?lang=zh-CN&fields=status,country,regionName,city,isp`);
+    const ipapiUrl = `http://ip-api.com/json/${ip}?lang=zh-CN&fields=status,country,regionName,city,isp`;
+    const resp = await fetchWithTimeout(ipapiUrl);
+    recordAIRequest({
+      userId, businessType: 'ip_location', businessId: ip,
+      requestUrl: ipapiUrl, requestModel: 'ip-api.com',
+      requestBody: { ip }, responseResult: null,
+      requestTime: ipapiReqTime, responseTime: new Date(),
+      status: resp.ok ? 0 : 1,
+      errorMsg: resp.ok ? null : 'HTTP ' + resp.status
+    });
     if (resp.ok) {
       const data = await resp.json();
       if (data.status === 'success') {
@@ -312,7 +333,7 @@ async function recordLoginLog({ username, userId = null, status = '0', msg = '',
     const ua = req.headers['user-agent'] || '';
     const { browser, os, device_type } = parseUserAgent(ua);
     const ipaddr = getClientIp(req);
-    const location = await resolveIpLocation(ipaddr);
+    const location = await resolveIpLocation(ipaddr, userId);
 
     const logId = snowflake.nextId();
     await db.query(
@@ -333,7 +354,7 @@ async function recordLogoutLog(req, userId, username) {
     const ua = req.headers['user-agent'] || '';
     const { browser, os, device_type } = parseUserAgent(ua);
     const ipaddr = getClientIp(req);
-    const location = await resolveIpLocation(ipaddr);
+    const location = await resolveIpLocation(ipaddr, userId);
 
     const logId = snowflake.nextId();
     await db.query(
@@ -370,7 +391,7 @@ async function recordOperLog({ title, businessType = 0, req, result = null, stat
     const ua = req.headers['user-agent'] || '';
     const { device_type } = parseUserAgent(ua);
     const ipaddr = getClientIp(req);
-    const location = await resolveIpLocation(ipaddr);
+    const location = await resolveIpLocation(ipaddr, req.userId || null);
 
     const operatorType = device_type === 'mobile' ? 2 : 1;
 

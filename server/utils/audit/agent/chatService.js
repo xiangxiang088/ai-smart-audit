@@ -138,7 +138,7 @@ async function ask(sessionId, userId, isAdmin, content) {
   const { session, question, history } = await prepareAsk(sessionId, userId, isAdmin, content);
   let result;
   try {
-    result = await runAgent({ projectId: String(session.project_id), question, history });
+    result = await runAgent({ projectId: String(session.project_id), question, history, userId });
   } catch (e) {
     await persistFailure(session, userId, question, e);
     const err = new Error('Agent 运行失败：' + String(e.message || e).slice(0, 200));
@@ -165,6 +165,7 @@ async function askStream(sessionId, userId, isAdmin, content, emit) {
       projectId: String(session.project_id),
       question,
       history,
+      userId,
       onEvent: (ev) => {
         // tool / answer 原样透传，其余（progress）归入进度类
         if (ev.type === 'tool' || ev.type === 'answer') safeEmit(ev.type, ev);

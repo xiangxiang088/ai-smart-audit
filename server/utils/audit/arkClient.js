@@ -21,6 +21,8 @@
  *   导致主模型必定降级到弱模型、报告漏检。
  */
 const configStore = require('../configStore');
+const { recordAIRequest } = require('../aiLogger');
+const { createdBy } = require('../auditContext');
 
 const DEFAULT_BASE_URL = process.env.ARK_BASE_URL || 'https://ark.cn-beijing.volces.com/api/v3';
 
@@ -277,6 +279,9 @@ async function callOnce(model, payload, timeoutMs, opts = {}) {
  * @param {boolean} [p.stream] 流式请求（长输出必开：非流式会被中间设备按空闲超时掐断）
  * @param {Function} [p.onDelta] 流式下每段正文回调 (增量, 累计)，用于边生成边下发
  * @param {Function} [p.onReset] 降级到备用模型前回调，上层据此清空已下发的半截内容
+ * @param {string} [p.businessType] 业务类型（写入 sl_sys_ai_log），如 audit_chat/bid_clearing
+ * @param {string|number} [p.businessId] 业务标识（项目ID/会话ID）
+ * @param {string|number} [p.userId] 发起人，缺省取异步上下文用户
  * @returns {Promise<{content:string, toolCalls:Array, model:string, usage:object, chain:Array, raw:object}>}
  */
 async function chatCompletion(p) {
@@ -317,10 +322,26 @@ async function chatCompletion(p) {
       }
       perModelTimeout = Math.min(perModelTimeout, remain);
     }
+    const reqTime = new Date();
+    const logCtx = {
+      userId: p.userId || createdBy(),
+      businessType: p.businessType || 'ark_chat',
+      businessId: p.businessId
+    };
     try {
       const json = await callOnce(model, payload, perModelTimeout, { stream: p.stream === true, onDelta: p.onDelta });
       const msg = json.choices && json.choices[0] && json.choices[0].message;
       attempts.push({ key: model.key, model: model.model, ok: true, latencyMs: Date.now() - started });
+      recordAIRequest({
+        ...logCtx,
+        requestUrl: `${model.baseUrl.replace(/\/$/, '')}/chat/completions`,
+        requestModel: model.model,
+        requestBody: { ...payload, model: model.model, stream: p.stream === true },
+        responseResult: json,
+        requestTime: reqTime,
+        responseTime: new Date(),
+        status: 0
+      });
       const failedBefore = attempts.filter(a => !a.ok);
       if (failedBefore.length) {
         console.warn(`[ark] 已降级到 ${model.model}（此前失败：${failedBefore.map(a => `${a.model}:${a.error || a.status}`).join(' | ')}）`);
@@ -338,6 +359,17 @@ async function chatCompletion(p) {
     } catch (err) {
       const secs = ((Date.now() - started) / 1000).toFixed(1);
       attempts.push({ key: model.key, model: model.model, ok: false, latencyMs: Date.now() - started, error: err.message, status: err.status });
+      recordAIRequest({
+        ...logCtx,
+        requestUrl: `${model.baseUrl.replace(/\/$/, '')}/chat/completions`,
+        requestModel: model.model,
+        requestBody: { ...payload, model: model.model, stream: p.stream === true },
+        responseResult: null,
+        requestTime: reqTime,
+        responseTime: new Date(),
+        status: 1,
+        errorMsg: `${err.status != null ? 'HTTP' + err.status + ' ' : ''}${err.message}`
+      });
       lastErr = err;
       const canFailover = err.name === 'AbortError' || err.failover === true || !err.status;
       console.warn(`[ark] 模型 ${model.model} 调用失败(${secs}s, ${canFailover ? '可降级' : '不可降级'})：${err.message}`);
@@ -356,17 +388,32 @@ async function testChain(timeoutMs = 30000) {
   const results = [];
   for (const model of models) {
     const started = Date.now();
+    const reqTime = new Date();
+    const testPayload = {
+      messages: [{ role: 'user', content: 'ping，请回复：pong' }],
+      max_tokens: 16,
+      temperature: 0,
+      model: model.model
+    };
     try {
-      const json = await callOnce(model, {
-        messages: [{ role: 'user', content: 'ping，请回复：pong' }],
-        max_tokens: 16,
-        temperature: 0
-      }, timeoutMs);
+      const json = await callOnce(model, testPayload, timeoutMs);
       results.push({
         key: model.key, label: model.label, model: model.model,
         ok: true, latencyMs: Date.now() - started,
         reply: (json.choices?.[0]?.message?.content || '').slice(0, 50),
         isActive: cfg.activeModel === model.model || cfg.activeModel === model.key
+      });
+      recordAIRequest({
+        userId: createdBy(),
+        businessType: 'model_test',
+        businessId: model.key,
+        requestUrl: `${model.baseUrl.replace(/\/$/, '')}/chat/completions`,
+        requestModel: model.model,
+        requestBody: testPayload,
+        responseResult: json,
+        requestTime: reqTime,
+        responseTime: new Date(),
+        status: 0
       });
     } catch (err) {
       results.push({
@@ -374,6 +421,19 @@ async function testChain(timeoutMs = 30000) {
         ok: false, latencyMs: Date.now() - started,
         error: err.message, status: err.status || null,
         isActive: cfg.activeModel === model.model || cfg.activeModel === model.key
+      });
+      recordAIRequest({
+        userId: createdBy(),
+        businessType: 'model_test',
+        businessId: model.key,
+        requestUrl: `${model.baseUrl.replace(/\/$/, '')}/chat/completions`,
+        requestModel: model.model,
+        requestBody: testPayload,
+        responseResult: null,
+        requestTime: reqTime,
+        responseTime: new Date(),
+        status: 1,
+        errorMsg: `${err.status != null ? 'HTTP' + err.status + ' ' : ''}${err.message}`
       });
     }
   }

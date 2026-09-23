@@ -12,11 +12,12 @@
 
 ## 🌐 Live Demo & Source Code
 
-| Item | Details |
-|------|---------|
-| 🚀 Live Demo | https://ai-audit.xunnan.net/pc/index.html |
-| 👤 Demo Account | `admin` / `123456` |
-| 📦 Source Code | https://gitee.com/xiangxiang088/ai-smart-audit |
+| Item                    | Details |
+|-------------------------|---------|
+| 🚀 Live Demo            | https://ai-audit.xunnan.net/pc/index.html |
+| 👤 Demo Account         | `admin` / `123456` |
+| 📦 Source Code （Github） | https://github.com/xiangxiang088/ai-smart-audit |
+| 📦 Source Code （Gitee）  | https://gitee.com/xiangxiang088/ai-smart-audit |
 
 > Please do not change the admin password so others can enjoy the demo too. Thank you for your support!
 
