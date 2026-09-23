@@ -440,7 +440,45 @@ server {
 }
 ```
 
-For production, make sure you have created `.env.production` and explicitly set `ALLOWED_ORIGINS=https://your.domain.com`.
+For production, make sure you have created `.env.production` — the `.env*` files are all listed in `.gitignore`
+and are not deployed with the code. The easiest path is `cp .env.production.example .env.production`, then fill in values.
+
+`ALLOWED_ORIGINS` **can usually be left empty**: the frontend calls the backend through a relative path (`/api`),
+so requests are same-origin, and the server allows same-origin requests automatically. Changing the domain,
+changing the IP, enabling HTTPS, or putting Nginx in front requires no change here.
+Only a genuinely split deployment (frontend on domain A, API on domain B) needs the frontend origin registered —
+glob subdomains are supported:
+
+```ini
+ALLOWED_ORIGINS=https://audit.example.com,https://*.example.com
+```
+
+### Post-deployment self-check
+
+One command reveals the configuration actually in effect and verifies CORS behaviour:
+
+```bash
+cd server && node scripts/check-deploy.mjs --host=your.domain.com
+```
+
+It reports which env file was loaded, whether key variables are empty, whether the port is listening,
+and simulates same-origin / cross-origin / glob / preflight requests with a pass-or-deny verdict for each.
+
+### Troubleshooting: login fails with `Not allowed by CORS`
+
+This is a **deployment configuration problem**, not a business error — the request origin was not allowed,
+so the server rejected it before it ever reached the application logic:
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Login breaks after a domain / HTTPS change | Same-origin requests were being checked against the whitelist | Upgrade to a build with same-origin allow, then restart |
+| Self-check reports "same-origin request denied" | The process is still running the old code | Restart the service |
+| Frontend and backend are genuinely split | Frontend origin not registered | Register it in `ALLOWED_ORIGINS`; `*.example.com` is supported |
+
+> One more easy trap: `NODE_ENV` decides which env file gets loaded. When starting via PM2 / systemd, pass it as a
+> **start argument** (`--env production` / `Environment=NODE_ENV=production`) — putting it only inside the file does
+> nothing, since the choice of file depends on it. When config appears not to apply, first check the
+> `⚙️ 环境文件:` and `🌐 CORS:` lines in the startup log.
 
 ---
 
@@ -452,7 +490,8 @@ ai-smart-audit/
 │   ├── server.js                        # Express entry: routes/security/rate limiting/static
 │   ├── db.js                            # MySQL connection pool
 │   ├── package.json
-│   ├── .env.template                    # Environment variable template
+│   ├── .env.template                    # Environment template (development)
+│   ├── .env.production.example          # Environment template (production: CORS / proxy / secrets)
 │   ├── sql/
 │   │   ├── v1.0.x/20260920-db-init-v1.0.x.sql   # Base system tables
 │   │   └── v1.1.x/                              # Engineering audit module (run in filename-date order)
@@ -481,6 +520,7 @@ ai-smart-audit/
 │   │       └── check/                   # Reconciliation / seal verification
 │   └── scripts/
 │       ├── exec-sql.js                  # SQL script runner
+│       ├── check-deploy.mjs             # Deploy self-check (env file / key vars / CORS behaviour)
 │       ├── e2e-bid-clearing.mjs         # Bid-clearing end-to-end test
 │       ├── verify-model-config.mjs      # Model-config API regression test
 │       └── verify-config-store.mjs      # Unified config center API regression test

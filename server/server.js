@@ -2,16 +2,25 @@ require('express-async-errors');
 
 // 根据 NODE_ENV 加载对应环境变量文件：.env.production / .env.development / .env
 const path = require('path');
+const fs = require('fs');
 const envFile = process.env.NODE_ENV === 'production'
   ? '.env.production'
   : process.env.NODE_ENV === 'development'
     ? '.env.development'
     : '.env';
-require('dotenv').config({ path: path.join(__dirname, envFile) });
+const envPath = path.join(__dirname, envFile);
+// 文件缺失必须显式告警：dotenv 读不到文件时是**静默**的，
+// 结果数据库、密钥、CORS 白名单全部为空，表现为各种莫名其妙的运行期错误。
+// （注意 .env* 都在 .gitignore 里，不会随代码一起部署，服务器上必须手动创建。）
+const envFileExists = fs.existsSync(envPath);
+if (!envFileExists) {
+  console.warn(`⚠️  环境变量文件 ${envFile} 不存在，本次启动仅使用系统环境变量`);
+}
+require('dotenv').config({ path: envPath });
+const LOADED_ENV_FILE = envFileExists ? envFile : `(缺失: ${envFile})`;
 
 const express = require('express');
-const cors = require('cors');
-const fs = require('fs');
+// 注：CORS 未使用 cors 中间件，见下方「CORS 配置」处自实现（需读取 req.headers.host 做同源判断）
 const crypto = require('crypto');
 
 // ===== 静态资源版本指纹（解决微信/浏览器缓存问题）=====
@@ -63,21 +72,97 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS配置：严格白名单模式，生产环境必须显式配置 ALLOWED_ORIGINS
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(',').map(s => s.trim())
-  : [];
-app.use(cors({
-  origin: (origin, cb) => {
-    // 允许无origin的请求（如curl、服务端调用）和白名单内的origin
-    if (!origin || allowedOrigins.includes(origin)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
-}));
+// ===== CORS 配置 =====
+// 本系统前端调用后端用的是**相对路径**（`const API = '/api'`），正常情况下是同源请求，
+// 浏览器根本不做 CORS 校验。但浏览器对 POST/PUT 等请求仍会附带 Origin 头，
+// 若服务端对同源请求也套白名单，那么部署域名 / IP / 端口一变（换服务器、上 HTTPS、走 Nginx 反代）
+// 就会报「Not allowed by CORS」——一个纯粹的部署配置问题，却被表现成登录失败。
+// 因此这里按两条路径放行：
+//   1) 同源请求：Origin 的 hostname 与请求 Host 的 hostname 相同 → 直接放行。
+//      经 Nginx 反代、HTTPS 在网关终止的场景同样成立（只比主机名，不比协议与端口）。
+//   2) 跨域请求：在 ALLOWED_ORIGINS 显式登记，支持逗号分隔、*.example.com 通配子域、* 全放行。
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
+  .split(',')
+  .map(s => s.trim())
+  .filter(Boolean);
+
+const ALLOW_ALL = ALLOWED_ORIGINS.includes('*');
+
+// 通配规则：* 可出现在任意位置，匹配该位置的任意非 / 字符。
+//   https://*.example.com  → 只匹配 https 协议下 example.com 的任意层级子域
+//   *.example.com          → 不含协议时自动补成 *://*.example.com
+// 通配作用于「完整来源」字符串，因此 https://evil-xunnan.net、https://xunnan.net.evil.com
+// 这类后缀/前缀拼接都命中不了 *.xunnan.net。
+//
+// 注意：配置里写的一定是完整来源（带 https://），所以不能用 startsWith('*.') 之类的
+// 前缀判断来识别通配 —— 那样会把 https://*.example.com 当成精确匹配项，规则静默失效。
+function compileOriginGlob(pattern) {
+  if (!pattern.includes('*')) return null;
+  const withScheme = pattern.includes('://') ? pattern : '*://' + pattern;
+  const rx = '^' + withScheme
+    .replace(/[.+?^${}()|[\]\\]/g, '\\$&')   // 转义正则元字符（* 留到下一步单独处理）
+    .replace(/\*/g, '[^/]*')
+    + '$';
+  return new RegExp(rx, 'i');
+}
+
+const originGlobs  = ALLOWED_ORIGINS.map(compileOriginGlob).filter(Boolean);
+const exactOrigins = ALLOWED_ORIGINS.filter(o => o !== '*' && !o.includes('*'));
+
+function hostnameOf(url) {
+  try { return new URL(url).hostname.toLowerCase(); } catch { return ''; }
+}
+
+/** 判断某次请求的 CORS 是否放行，返回 { ok, reason } 便于日志定位 */
+function checkOrigin(origin, reqHost) {
+  if (!origin) return { ok: true, reason: 'no-origin' };  // curl / 服务端调用 / 同源简单请求
+  if (ALLOW_ALL) return { ok: true, reason: 'allow-all' };
+
+  const originHost = hostnameOf(origin);
+  // 同源判定（含反向代理场景）：只比主机名，忽略协议与端口差异
+  const reqHostname = String(reqHost || '').split(':')[0].toLowerCase();
+  if (originHost && reqHostname && originHost === reqHostname) return { ok: true, reason: 'same-origin' };
+
+  if (exactOrigins.includes(origin)) return { ok: true, reason: 'whitelist' };
+  // 通配匹配的是「完整来源」，不是 hostname
+  if (originGlobs.some(re => re.test(origin))) return { ok: true, reason: 'whitelist-glob' };
+  return { ok: false, reason: 'not-allowed' };
+}
+
+// 这里自己实现而不用 cors 中间件：同源判断需要读 req.headers.host，
+// 而 cors 的 origin 回调签名是 (origin, callback)，拿不到 req。
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  const verdict = checkOrigin(origin, req.headers.host);
+
+  if (!verdict.ok) {
+    console.warn(
+      `[cors] 拒绝来源 ${origin}（Host: ${req.headers.host}）；` +
+      `白名单: ${ALLOWED_ORIGINS.join(', ') || '(空)'}`
+    );
+    // 403 + 可操作提示：这是部署配置问题，不是业务错误，别让排查者去翻代码
+    return res.status(403).json({
+      error: '跨域请求被拒绝：请求来源不在允许范围内。若为私有化部署，请检查服务端 ALLOWED_ORIGINS 配置。'
+    });
+  }
+
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);  // 回显具体来源（credentials=true 时不能用 *）
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Vary', 'Origin');                       // 避免 CDN / 代理把响应串给别的来源
+  }
+
+  // 预检请求到此结束，不进入业务路由
+  if (req.method === 'OPTIONS' && req.headers['access-control-request-method']) {
+    res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers',
+      req.headers['access-control-request-headers'] || 'Content-Type,Authorization');
+    res.setHeader('Access-Control-Max-Age', '7200');       // 预检结果缓存 2 小时
+    return res.status(204).end();
+  }
+
+  next();
+});
 
 // 通用内存限流中间件工厂
 function createRateLimiter(maxAttempts, windowMs, message) {
@@ -123,10 +208,14 @@ app.use('/api/edu/analytics', createRateLimiter(20, 60 * 1000, 'AI分析请求�
 app.use('/api/edu/assessment', createRateLimiter(30, 60 * 1000, '评测请求过于频繁，请1分钟后再试'));
 app.use('/api/edu/learning-engine', createRateLimiter(30, 60 * 1000, '请求过于频繁，请1分钟后再试'));
 
-// 信任反向代理：仅在生产环境（有Nginx等代理时）启用
-if (process.env.NODE_ENV === 'production') {
-  app.set('trust proxy', 'loopback');
-}
+// 信任反向代理：必须早于任何读取 req.ip 的中间件（限流、操作日志）。
+// 默认 'loopback'（只信任来自本机的代理，也即 Nginx 与 Node 同机部署的常见形态）——
+// 'loopback' 不会信任外网伪造的 X-Forwarded-For，因此无条件启用是安全的。
+// 原先只在 NODE_ENV=production 时启用，一旦部署时忘记设置该变量，
+// 所有请求的 req.ip 都会是代理 IP，导致登录限流被全站共享、操作日志 IP 失真。
+// 若 Nginx 与 Node 不同机，用 TRUST_PROXY 指定代理地址或网段（如 TRUST_PROXY=192.168.1.10）。
+const TRUST_PROXY = process.env.TRUST_PROXY || 'loopback';
+app.set('trust proxy', TRUST_PROXY);
 
 // 中间件
 app.use(express.json({ limit: '10mb' }));
@@ -327,6 +416,14 @@ const server = app.listen(PORT, () => {
   console.log(`📍 访问地址: http://localhost:${PORT}`);
   console.log(`💻 PC端: http://localhost:${PORT}/pc/audit-project.html`);
   console.log(`🆔 进程 PID: ${process.pid}`);
+  // 回显「实际生效的配置」：部署阶段最难查的就是「改了配置却没生效」，
+  // 让人一眼看到加载了哪个文件、白名单是什么，比翻代码猜要省事得多。
+  console.log(`⚙️  环境文件: ${LOADED_ENV_FILE}（NODE_ENV=${process.env.NODE_ENV || '未设置'}）`);
+  console.log(`🌐 CORS: 同源放行 + 白名单 [${ALLOWED_ORIGINS.join(', ') || '空'}]  trust proxy=${TRUST_PROXY}`);
+  console.log(`🗄️  数据库: ${process.env.DB_HOST || '(未配置)'}:${process.env.DB_PORT || 3306}/${process.env.DB_NAME || '(未配置)'}`);
+  if (!process.env.JWT_SECRET) {
+    console.warn('⚠️  JWT_SECRET 未配置：将使用内置默认密钥，所有已登录用户的 token 会在重启后失效，且存在伪造风险');
+  }
 });
 
 // 监听失败必须让进程退出：

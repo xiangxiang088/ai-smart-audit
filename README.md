@@ -438,7 +438,41 @@ server {
 }
 ```
 
-生产环境请确保已创建 `.env.production`，并显式配置 `ALLOWED_ORIGINS=https://your.domain.com`。
+生产环境请确保已创建 `.env.production` —— `.env*` 都在 `.gitignore` 里、不会随代码部署，
+最省事的做法是 `cp .env.production.example .env.production` 再改值。
+
+`ALLOWED_ORIGINS` **通常留空即可**：前端调用后端用的是相对路径 `/api`，与后端同源，
+服务端对同源请求已自动放行，因此换域名、换 IP、上 HTTPS、走 Nginx 反代都无需改配置。
+只有「前后端分离部署」（前端 A 域名、API B 域名）才需要登记前端来源，支持通配子域：
+
+```ini
+ALLOWED_ORIGINS=https://audit.example.com,https://*.example.com
+```
+
+### 部署后自检
+
+一条命令看清「实际生效的配置」与 CORS 行为是否都如预期：
+
+```bash
+cd server && node scripts/check-deploy.mjs --host=your.domain.com
+```
+
+它会检查实际加载了哪个 env 文件、关键变量是否为空、端口是否在监听，
+并模拟同源 / 跨域 / 通配 / 预检四类请求，逐条给出放行或拒绝的判定。
+
+### 常见问题：登录报 `Not allowed by CORS`
+
+这属于**部署配置问题**，不是业务错误 —— 请求来源未被放行，被服务端在进入业务逻辑前就拦掉了：
+
+| 现象 | 原因 | 处理 |
+|---|---|---|
+| 换域名 / 上 HTTPS 后突然登录失败 | 服务端把同源请求也拿去套白名单 | 升级到含同源放行逻辑的版本并重启 |
+| 自检提示「同源请求被拒」 | 进程跑的还是改动前的代码 | 重启服务 |
+| 前后端确实分离部署 | 前端域名未登记 | 在 `ALLOWED_ORIGINS` 登记，支持 `*.example.com` |
+
+> 另一个容易踩的点：`NODE_ENV` 决定加载哪个 env 文件，用 PM2 / systemd 启动时要通过**启动参数**传入
+> （`--env production` / `Environment=NODE_ENV=production`），只写在文件里是无效的 —— 读哪个文件本身就取决于它。
+> 配置没生效时，先看启动日志里的 `⚙️ 环境文件:` 与 `🌐 CORS:` 两行，一眼就能确认。
 
 ---
 
@@ -450,7 +484,8 @@ ai-smart-audit/
 │   ├── server.js                        # Express 入口：路由/安全中间件/限流/静态托管
 │   ├── db.js                            # MySQL 连接池
 │   ├── package.json
-│   ├── .env.template                    # 环境变量模板
+│   ├── .env.template                    # 环境变量模板（开发）
+│   ├── .env.production.example          # 环境变量模板（生产：CORS / 反向代理 / 密钥）
 │   ├── sql/
 │   │   ├── v1.0.x/20260920-db-init-v1.0.x.sql   # 基础系统表
 │   │   └── v1.1.x/                              # 工程审计模块（按文件名日期顺序执行）
@@ -479,6 +514,7 @@ ai-smart-audit/
 │   │       └── check/                   # 勾稽 / 签章核对逻辑
 │   └── scripts/
 │       ├── exec-sql.js                  # SQL 脚本执行器
+│       ├── check-deploy.mjs             # 部署自检（环境文件 / 关键变量 / CORS 行为）
 │       ├── e2e-bid-clearing.mjs         # 清标分析端到端测试
 │       ├── verify-model-config.mjs      # 模型配置接口回归测试
 │       └── verify-config-store.mjs      # 统一配置中心接口回归测试
