@@ -47,13 +47,9 @@ async function pageInit() {
   }
   setAuditProject(projectId);
   if (!new URLSearchParams(location.search).get('id')) history.replaceState(null, '', '?id=' + projectId);
-  const p = projects.find(x => String(x.id) === String(projectId));
-  renderPCTopbar('⚠️ 疑点台账',
-    `<select class="au-select sm" id="topProjectSwitch" title="切换审计项目" style="width:auto;max-width:220px;"></select>`);
-  bindAuditProjectSwitcher(document.getElementById('topProjectSwitch'), projects, projectId);
+  renderProjectContext(document.getElementById('ctxSwitch'), document.getElementById('ctxMeta'), projects, projectId);
 
   document.getElementById('projectView').style.display = 'block';
-  if (p) document.getElementById('projTitle').textContent = p.project_name + ' · 疑点台账';
   document.getElementById('btnRefresh').addEventListener('click', load);
   document.getElementById('btnRescan').addEventListener('click', rescan);
   document.getElementById('btnExportXlsx').addEventListener('click', () => downloadExport('export', '审计核对台账.xlsx'));

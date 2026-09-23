@@ -110,10 +110,39 @@ window.fillAuditProjectSelect = async function(selectEl, { blankOption = true } 
     projects.map(p => `<option value="${p.id}">${esc(p.project_name)}</option>`).join('');
   return projects;
 };
-// 绑定顶栏「切换项目」下拉（projects 为已加载的项目列表）
+// 绑定顶栏「切换项目」下拉（已弃用，保留兼容；新页面请用 renderProjectContext）
 window.bindAuditProjectSwitcher = function(selectEl, projects, currentId) {
+  if (!selectEl) return;
   selectEl.innerHTML = projects.map(p => `<option value="${p.id}">${esc(p.project_name)}</option>`).join('');
   selectEl.value = String(currentId);
+  selectEl.addEventListener('change', e => {
+    if (e.target.value && String(e.target.value) !== String(currentId)) {
+      setAuditProject(e.target.value);
+      location.href = location.pathname + '?id=' + encodeURIComponent(e.target.value);
+    }
+  });
+};
+
+// 页内「项目上下文条」：醒目的项目下拉 + 编号/期间/统计
+// 放在各功能页的 .au-project-bar 内，让用户一眼看到当前项目并可就地切换
+window.renderProjectContext = function(selectEl, metaEl, projects, currentId) {
+  if (!selectEl) return;
+  selectEl.innerHTML = projects.map(p =>
+    `<option value="${p.id}">📁 ${esc(p.project_name)}</option>`).join('');
+  selectEl.value = String(currentId);
+
+  const cur = projects.find(p => String(p.id) === String(currentId));
+  if (metaEl && cur) {
+    const parts = [
+      cur.project_code ? '🔖 ' + esc(cur.project_code) : '',
+      cur.audit_period ? '📅 ' + esc(cur.audit_period) : '',
+      cur.doc_count != null ? `📄 资料 ${Number(cur.doc_count) || 0}` : '',
+      cur.parsed_count != null ? `✅ 已解析 ${Number(cur.parsed_count) || 0}` : '',
+      cur.finding_count != null ? `⚠️ 疑点 ${Number(cur.finding_count) || 0}` : ''
+    ].filter(Boolean);
+    metaEl.innerHTML = parts.length ? parts.join('<span class="au-ctx-sep">·</span>') : '暂无编号 / 期间信息';
+  }
+
   selectEl.addEventListener('change', e => {
     if (e.target.value && String(e.target.value) !== String(currentId)) {
       setAuditProject(e.target.value);

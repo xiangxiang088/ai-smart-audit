@@ -28,8 +28,10 @@
       <div id="projectView" style="display:none;">
         <div class="au-project-bar">
           <button class="au-btn sm" onclick="location.href='/pc/audit-project.html'">‹ 返回项目</button>
-          <h2 id="projTitle">项目资料舱</h2>
-          <span id="projStats" class="au-stat-chip" style="margin-left:8px;"></span>
+          <div class="au-ctx">
+            <select class="au-ctx-select" id="ctxSwitch"></select>
+            <div class="au-ctx-meta" id="ctxMeta"></div>
+          </div>
         </div>
 
         <div class="pc-card" style="margin-bottom:16px;">

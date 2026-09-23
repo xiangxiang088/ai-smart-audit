@@ -28,7 +28,10 @@
       <div id="projectView" style="display:none;">
         <div class="au-project-bar">
           <button class="au-btn sm" onclick="location.href='/pc/audit-project.html'">‹ 返回项目</button>
-          <h2 id="projTitle">疑点台账</h2>
+          <div class="au-ctx">
+            <select class="au-ctx-select" id="ctxSwitch"></select>
+            <div class="au-ctx-meta" id="ctxMeta"></div>
+          </div>
           <span id="findingMeta" class="au-stat-chip" style="margin-left:8px;"></span>
           <button class="au-btn sm" id="btnRescan" style="margin-left:auto;">↻ 重新扫描</button>
           <button class="au-btn sm" id="btnRefresh">刷新</button>

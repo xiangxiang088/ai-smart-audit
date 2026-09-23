@@ -46,7 +46,8 @@ async function pageInit() {
     projects = await request('/audit/projects');
   } catch (e) { return; }
   const opts = projects.map(p => `<option value="${p.id}">${esc(p.project_name)}</option>`).join('');
-  document.getElementById('projectSelect').innerHTML = '<option value="">— 选择审计项目 —</option>' + opts;
+  const ctxOpts = projects.map(p => `<option value="${p.id}">📁 ${esc(p.project_name)}</option>`).join('');
+  document.getElementById('projectSelect').innerHTML = '<option value="">— 选择审计项目 —</option>' + ctxOpts;
   document.getElementById('projectPick').innerHTML = '<option value="">— 选择审计项目 —</option>' + opts;
 
   if (projectId && projects.some(p => String(p.id) === String(projectId))) {

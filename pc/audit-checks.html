@@ -28,7 +28,10 @@
       <div id="projectView" style="display:none;">
         <div class="au-project-bar">
           <button class="au-btn sm" onclick="location.href='/pc/audit-project.html'">‹ 返回项目</button>
-          <h2 id="projTitle">核对程序</h2>
+          <div class="au-ctx">
+            <select class="au-ctx-select" id="ctxSwitch"></select>
+            <div class="au-ctx-meta" id="ctxMeta"></div>
+          </div>
           <button class="au-btn primary" id="btnRunBoq" style="margin-left:auto;">▶ 清单↔结算勾稽</button>
           <button class="au-btn primary" id="btnRunVisa">▶ 三方签章核对</button>
         </div>

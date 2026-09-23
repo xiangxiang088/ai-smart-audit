@@ -64,25 +64,13 @@ async function pageInit() {
                  + (wantPage ? '&page=' + wantPage : '');
     history.replaceState(null, '', '?id=' + projectId + suffix);
   }
-  renderPCTopbar('📄 资料舱',
-    `<select class="au-select sm" id="topProjectSwitch" title="切换审计项目" style="width:auto;max-width:220px;"></select>`);
-  bindAuditProjectSwitcher(document.getElementById('topProjectSwitch'), projects, projectId);
+  renderProjectContext(document.getElementById('ctxSwitch'), document.getElementById('ctxMeta'), projects, projectId);
 
   document.getElementById('projectView').style.display = 'block';
   bindUploader();
   document.getElementById('btnRefresh').addEventListener('click', loadDocs);
   document.getElementById('btnRetryAll').addEventListener('click', retryAll);
-  await loadProject();
   await loadDocs();
-}
-
-async function loadProject() {
-  try {
-    const p = await request('/audit/projects/' + projectId);
-    document.getElementById('projTitle').textContent = p.project_name + ' · 资料舱';
-    document.getElementById('projStats').textContent
-      = `资料 ${Number(p.doc_count) || 0} ｜ 已解析 ${Number(p.parsed_count) || 0} ｜ 失败 ${Number(p.failed_count) || 0} ｜ 疑点 ${Number(p.finding_count) || 0}`;
-  } catch (err) { /* toast 已弹 */ }
 }
 
 // 从问答页证据角标跳转而来：?doc=xx&page=n，解析完成后自动打开并定位页
@@ -179,7 +167,6 @@ async function delDoc(id) {
   if (!ok) return;
   await request('/audit/documents/' + id, { method: 'DELETE' });
   showToast('已删除');
-  loadProject();
   loadDocs();
 }
 
@@ -216,7 +203,6 @@ async function uploadFiles(fileList) {
     const data = await res.json();
     if (!res.ok) { showToast(data.error || '上传失败'); return; }
     showToast(`上传成功，${data.documents.length} 个文件已自动开始解析`);
-    loadProject();
     loadDocs();
   } catch (err) {
     showToast('上传失败：' + err.message);
